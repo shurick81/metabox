@@ -1,0 +1,26 @@
+Metabox:
+  Description: Lookup environment variables
+  TopValueName: TopValue1
+
+  Parameters:
+    TopParameterName: TopParameterValue1
+
+  Resources:
+    Paramerters:
+      ResourceParameterName: ResourceParameterName1
+
+    Resource1:
+      Properties:
+        PropertyValueFunction: PropertyValueFunction1
+
+    Resource2:
+      Properties:
+        PropertyValueToken: PropertyValueToken1
+        PropertyNameToken1: "PropertyNameToken"
+        PropertyNameToken1: PropertyValueToken1
+
+    Resource3:
+      Properties:
+        "Prefix-PropertyNameToken1": "Value1"
+        "PropertyNameToken1-Postfix": "Value2"
+        "Prefix-PropertyNameToken1-Postfix": "Value3"

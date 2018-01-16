@@ -1,0 +1,108 @@
+Metabox:
+  Description: Builds a windows 2016 application image; updates, NET35, SQL/SharePoint 2016 prerequisites
+  Parameters:
+  Resources:
+    win2016-mb-bin-sp16:
+      Type: "metabox::packer::build"
+      Parameters:
+        box_name: "win2016-mb-app-${ENV:METABOX_GIT_BRANCH}"
+      Properties:
+        PackerFileName: "win2016-mb-bin-sp16.json"
+        VagrantBoxName: "win2016-mb-bin-sp16-${ENV:METABOX_GIT_BRANCH}"
+        PackerTemplate:
+          variables:
+            metabox_git_branch: "Fn::Env METABOX_GIT_BRANCH"
+            metabox_working_dir: "Fn::Env METABOX_WORKING_DIR"
+            
+            http_directory: "Fn::Env METABOX_DOWNLOADS_PATH"
+          
+          builders:
+            - Type: "packer::builders::vagrant_win16_sysprep"
+              Properties:
+                box_name: "Fn::GetParameter box_name"
+                builder:
+                  guest_additions_mode: "attach"
+                  communicator: "winrm"
+                  winrm_username: "vagrant"
+                  winrm_password: "vagrant"
+                  winrm_timeout: "12h"
+                  output_directory: "{{ user `metabox_working_dir` }}/packer_output/win2016-mb-bin-sp16-{{ user `metabox_git_branch` }}"
+                  http_directory: "{{ user `http_directory` }}"
+          
+          provisioners:
+            # supporting files for sysprep 2016
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/win2016/run-sysprep.cmd"
+              destination: "c:/run-sysprep.cmd"
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/win2016/run-sysprep.ps1"
+              destination: "c:/run-sysprep.ps1"
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/answer_files/2016/Autounattend_sysprep.xml"
+              destination: "c:/Autounattend_sysprep.xml"
+
+            # transfer binaries
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
+              environment_vars:
+                - "METABOX_RESOURCE_NAME=sp2016_rtm"
+
+            # SP2016 prerequisites: install, reboot, install
+            # we should be ok with 3 hits and reboots to get pre-req installed
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_sp2013_pre.ps1"
+              environment_vars:
+                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2016_rtm"
+            - type: "windows-restart"
+    
+            - type: "powershell"  
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_sp2013_pre.ps1"
+              environment_vars:
+                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2016_rtm"
+            - type: "windows-restart"
+
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_sp2013_pre.ps1"
+              environment_vars:
+                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2016_rtm"
+                - "METABOX_DSC_CHECK=1"
+            - type: "windows-restart"
+
+            # SP2016 bin install: install, reboot, install
+            # two hits to install binaries, one reboot in between
+            - type: "powershell"
+              #pause_before: "120m"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_sp2013_bin.ps1"
+              environment_vars:
+                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2016_rtm"
+                - "METABOX_SP_PRODUCT_KEY=NQGJR-63HC8-XCRQH-MYVCH-3J3QR"
+            - type: "windows-restart"
+
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_sp2013_bin.ps1"
+              environment_vars:
+                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2016_rtm"
+                - "METABOX_SP_PRODUCT_KEY=NQGJR-63HC8-XCRQH-MYVCH-3J3QR"
+                - "METABOX_DSC_CHECK=1"
+            
+            # finalizing image
+            # cleaning up install folder, smaller image
+            - type: "powershell"
+              inline:
+                - "Remove-Item 'C:\\_metabox_resources\\sp2016_rtm\\*' -Recurse -Force -ErrorAction SilentlyContinue"
+                #- "Remove-Item 'C:\\_metabox_resources\\sp2013_prerequisites\\*' -Recurse -Force -ErrorAction SilentlyContinue"
+
+            # ensuring no pending reboots are here
+            - type: "windows-restart"
+          post-processors: 
+            - Type:  "packer::post-processors::vagrant"
+              Properties:
+                output: "{{ user `metabox_working_dir` }}/packer_boxes/win2016-mb-bin-sp16-{{ user `metabox_git_branch` }}-{{.Provider}}.box"
+
+   

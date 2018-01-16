@@ -1,0 +1,60 @@
+{
+    "variables": {
+      "metabox_git_branch": "master",
+      "yum": "git,vim,wget",
+      "package": "jenkins-2.84-1.1",
+      "plugins": "ce-editor,antisamy-markup-formatter,authentication-tokens,bouncycastle-api,branch-api,cloudbees-folder,credentials-binding,credentials,display-url-api,docker-commons,docker-workflow,durable-task,git-client,git,git-server,handlebars,jackson2-api,jquery-detached,jsch,junit,mailer,mapdb-api,matrix-auth,matrix-project,momentjs,pipeline-build-step,pipeline-graph-analysis,pipeline-input-step,pipeline-milestone-step,pipeline-model-api,pipeline-model-declarative-agent,pipeline-model-definition,pipeline-model-extensions,pipeline-rest-api,pipeline-stage-step,pipeline-stage-tags-metadata,pipeline-stage-view,plain-credentials,scm-api,scm-sync-configuration,script-security,ssh-agent,ssh-credentials,ssh-slaves,ssh,structs,subversion,windows-slaves,workflow-aggregator,workflow-api,workflow-basic-steps,workflow-cps-global-lib,workflow-cps,workflow-durable-task-step,workflow-job,workflow-multibranch,workflow-scm-step,workflow-step-api,workflow-support"
+    },
+
+    "builders": [
+      
+      {
+        "type": "vagrant",
+  
+        "box_name": "centos7-mb-java8-{{ user `metabox_git_branch` }}",
+        "box_provider": "virtualbox",
+        "box_file": ".ovf",
+  
+        "builder": {  
+          "output_directory" : "output-centos7-jenkins2-{{ user `metabox_git_branch` }}",
+          "type": "virtualbox-ovf",
+          "headless": "true",
+          "boot_wait": "30s",
+          "ssh_username": "vagrant",
+          "ssh_password": "vagrant",
+          "ssh_wait_timeout": "8h",
+          "shutdown_command": "sudo -S sh -c '/usr/sbin/shutdown -h'",
+          "shutdown_timeout": "15m"
+        }
+        
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "scripts": [
+            "./scripts/shared/mb_printenv.sh",
+
+            "./scripts/centos7-jenkins2/j2_install.sh",
+
+            "./scripts/centos7-jenkins2/j2_configure_cli.sh",
+            "./scripts/centos7-jenkins2/j2_configure_plugins.sh",
+            "./scripts/centos7-jenkins2/j2_safe_restart.sh"
+        ],
+        "environment_vars": [
+          "METABOX_JENKINS2_PACKAGE={{ user `package`  }}",
+          "METABOX_JENKINS2_PLUGINS={{ user `plugins`  }}"
+        ],
+        "execute_command": "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'"        
+      }
+    
+    ],
+    "post-processors": [
+      {
+        "type": "vagrant",
+        "keep_input_artifact": "false",
+        "output": "centos7-mb-jenkins2-{{ user `metabox_git_branch` }}-{{.Provider}}.box"
+      }
+    ]
+  }
+  

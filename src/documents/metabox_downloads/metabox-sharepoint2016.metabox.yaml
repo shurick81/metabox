@@ -1,0 +1,23 @@
+Metabox:
+  Description: Downloads SharePoint 2016
+    
+  Resources:
+    sp2016:
+      Type: "metabox::http::file_set"
+      Resources:  
+        sp2016server_rtm:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "http://care.dlservice.microsoft.com/dl/download/0/0/4/004EE264-7043-45BF-99E3-3F74ECAE13E5/officeserver.img"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/sp2016_rtm/officeserver.img"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "9928405ae16a6f3d5b46c5772c7492e6dd2a26c4" 
+            Hooks:
+              Pre: 
+                Inline: 
+                  - "echo 'pre-download'" 
+              Post: 
+                Inline: 
+                  - "7z -v500m a zip/dist.zip officeserver.img"

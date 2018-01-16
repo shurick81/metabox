@@ -1,0 +1,26 @@
+Metabox:
+  Description: Lookup environment variables
+  TopValueName: "Fn::Env TopValue"
+
+  Parameters:
+    TopParameterName: "Fn::Env TopParameterValue"
+
+  Resources:
+    Paramerters:
+      ResourceParameterName: "Fn::Env ResourceParameterName"
+
+    Resource1:
+      Properties:
+        PropertyValueFunction: "Fn::Env PropertyValueFunction"
+
+    Resource2:
+      Properties:
+        PropertyValueToken: "${ENV:PropertyValueToken}"
+        "${ENV:PropertyNameToken}": "PropertyNameToken"
+        "${ENV:PropertyNameToken}": "${ENV:PropertyValueToken}"
+
+    Resource3:
+      Properties:
+        "Prefix-${ENV:PropertyNameToken}": "Value1"
+        "${ENV:PropertyNameToken}-Postfix": "Value2"
+        "Prefix-${ENV:PropertyNameToken}-Postfix": "Value3"

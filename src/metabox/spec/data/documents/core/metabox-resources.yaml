@@ -1,0 +1,21 @@
+Metabox:
+  Description: Base Metabox template with resources
+
+  Resources:
+    EmptyResource1:
+      Type: "metabox::resource"
+      Properties:
+        PropertyString1: "Value1"
+        PropertyNumber1: 1
+        PropertyArray1: 
+          - "Value1"
+          - 1
+    
+    EmptyResource2:
+      Type: "metabox::resource"
+      Properties:
+        PropertyString1: "Value2"
+        PropertyNumber2: 2
+        PropertyArray2: 
+          - "Value2"
+          - 2

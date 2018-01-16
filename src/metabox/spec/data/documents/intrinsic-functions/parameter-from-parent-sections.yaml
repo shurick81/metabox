@@ -1,0 +1,18 @@
+Metabox:
+  Description: Can resolve resource section parameters
+  Parameters:
+      TopSectionParam1: "TopSectionParam1-Value"
+
+  Resources:
+    Parameters:
+      ResourceSectionParam1: "ResourceSectionParam1-Value"
+  
+    MasterResource:
+      Type: "metabox::resource"
+      Parameters:
+        ResourceParam1: "ResourceParam1-Value"
+     
+      Properties:
+        Value1: "Fn::GetParameter ResourceParam1"
+        Value2: "Fn::GetParameter ResourceSectionParam1"
+        Value3: "Fn::GetParameter TopSectionParam1"

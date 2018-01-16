@@ -1,0 +1,11 @@
+.log
+.tmp
+.dev
+.test
+.config
+.rspec_status
+.com.apple.timemachine.supported
+.vscode
+.DS_Store
+coverage/
+artifacts/

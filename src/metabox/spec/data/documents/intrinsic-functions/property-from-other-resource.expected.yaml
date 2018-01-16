@@ -1,0 +1,15 @@
+Metabox:
+  Description: Can resolve property values from the same resource
+  Resources:
+    MasterResource:
+      Type: "metabox::resource"
+      Properties:
+        PropertyString1: "PropertyString1-Value"
+        PropertyString2: "PropertyString2-Value"
+    
+    ChildResource:
+      Type: "metabox::resource"
+      Properties:
+        # lookup value from other resource
+        Value1: "PropertyString1-Value"
+        Value2: "PropertyString2-Value"

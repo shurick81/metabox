@@ -1,0 +1,41 @@
+Metabox:
+  Description: Downloads additional software
+    
+  Resources:
+    7zip:
+      Type: "metabox::http::file_set"
+      Resources:
+        7zip-17.01-x86:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "http://www.7-zip.org/a/7z1701.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/7zip/7z1701-x86.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "2c94bd39e7b3456873494c1520c01ae559bc21d7" 
+            Hooks:
+              Pre: 
+                Inline: 
+                  - "echo 'pre-download'" 
+              Post: 
+                Inline: 
+                  - "echo 'post-download'"       
+        
+        7zip-17.01-x64:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "http://www.7-zip.org/a/7z1701-x64.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/7zip/7z1701-x64.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "9f3d47dfdce19d4709348aaef125e01db5b1fd99" 
+            Hooks:
+              Pre: 
+                Inline: 
+                  - "echo 'pre-download'" 
+              Post: 
+                Inline: 
+                  - "echo 'post-download'"       
+        

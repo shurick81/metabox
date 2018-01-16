@@ -1,0 +1,140 @@
+Metabox:
+  Description: Builds CentOS7 box with pre-installed Jenkins2
+  Parameters:
+    jenkins_package_name  : "jenkins-2.84-1.1"
+
+    jenkins_plugins       : "blueocean,ace-editor,antisamy-markup-formatter,authentication-tokens,bouncycastle-api,branch-api,cloudbees-folder,credentials-binding,credentials,display-url-api,docker-commons,docker-workflow,durable-task,git-client,git,git-server,handlebars,jackson2-api,jquery-detached,jsch,junit,mailer,mapdb-api,matrix-auth,matrix-project,momentjs,pipeline-build-step,pipeline-graph-analysis,pipeline-input-step,pipeline-milestone-step,pipeline-model-api,pipeline-model-declarative-agent,pipeline-model-definition,pipeline-model-extensions,pipeline-rest-api,pipeline-stage-step,pipeline-stage-tags-metadata,pipeline-stage-view,plain-credentials,scm-api,scm-sync-configuration,script-security,ssh-agent,ssh-credentials,ssh-slaves,ssh,structs,subversion,windows-slaves,workflow-aggregator,workflow-api,workflow-basic-steps,workflow-cps-global-lib,workflow-cps,workflow-durable-task-step,workflow-job,workflow-multibranch,workflow-scm-step,workflow-step-api,workflow-support"
+    jenkins_ui_port       : 8082
+    jenkins_web_agent_port: 33977
+    jenkins_pipelines_path: "/vagrant/scripts/vagrant/centos7-mb-jenkins2/pipelines"
+
+    custom_machine_folder : "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-ci-stack"
+    metabox_ci_box_name   : "centos7-mb-jenkins2-${ENV:METABOX_GIT_BRANCH}" 
+  Resources:
+    
+    centos7-mb-jenkins2:
+      Type: "metabox::packer::build"
+      Parameters:
+        box_name: "centos7-mb-java8-${ENV:METABOX_GIT_BRANCH}"
+      Properties:
+        PackerFileName: "centos7-mb-jenkins2.json"
+        VagrantBoxName: "centos7-mb-jenkins2-${ENV:METABOX_GIT_BRANCH}"
+        PackerTemplate:
+          variables:
+            metabox_git_branch : "Fn::Env METABOX_GIT_BRANCH"
+            metabox_working_dir: "Fn::Env METABOX_WORKING_DIR"
+            yum    : "git,vim,wget"
+            package: "Fn::GetParameter jenkins_package_name"
+            plugins: "Fn::GetParameter jenkins_plugins"
+          builders:
+              - Type: "packer::builders::vagrant_centos7"
+                Properties:
+                  box_name: "centos7-mb-java8-${ENV:METABOX_GIT_BRANCH}"
+                  builder:
+                    output_directory: "{{ user `metabox_working_dir` }}/packer_output/centos7-jenkins2-{{ user `metabox_git_branch` }}"
+          provisioners:
+            - Type: "packer::provisioners::shell_centos7"
+              Properties:
+                scripts:
+                  - "./scripts/packer/shared/mb_printenv.sh"
+                  - "./scripts/packer/centos7-jenkins2/j2_install.sh"
+                  - "./scripts/packer/centos7-jenkins2/j2_configure_cli.sh"
+                  - "./scripts/packer/centos7-jenkins2/j2_configure_plugins.sh"
+                  - "./scripts/packer/centos7-jenkins2/j2_safe_restart.sh"
+                environment_vars: 
+                  - "METABOX_JENKINS2_PACKAGE={{ user `package`  }}"
+                  - "METABOX_JENKINS2_PLUGINS={{ user `plugins`  }}"
+          post-processors: 
+            - Type:  "packer::post-processors::vagrant"
+              Properties:
+                output: "{{ user `metabox_working_dir` }}/packer_boxes/centos7-mb-jenkins2-{{ user `metabox_git_branch` }}-{{.Provider}}.box"
+        
+    metabox-ci:
+      Type: "vagrant::stack"
+      Parameters:
+        soe_box_name: "Fn::GetParameter metabox_ci_box_name"
+      Resources:
+        jenkins2:
+          OS: 'linux'
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter soe_box_name"
+
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 2
+                memory: 512
+                machinefolder: "Fn::GetParameter custom_machine_folder"
+
+            - Type: "vagrant::config::vm::network"
+              Properties:
+                type: "forwarded_port"
+                guest: 8080
+                host: "Fn::GetParameter jenkins_ui_port"
+            
+            - Type: "vagrant::config::vm::network"
+              Properties:
+                type: "forwarded_port"
+                guest: "Fn::GetParameter jenkins_web_agent_port"
+                host: "Fn::GetParameter jenkins_web_agent_port"
+                
+            - Type: "vagrant::vm:provision"
+              Properties: 
+                type: "shell"
+                path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_configure_plugins.sh"
+                args: 
+                  - "Fn::GetParameter jenkins_plugins"
+                  - "Fn::GetParameter jenkins_web_agent_port"
+                  - "Fn::GetParameter jenkins_pipelines_path"
+            
+            - Type: "vagrant::vm:provision"
+              Properties:    
+                type: "shell"    
+                path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_configure_settings.sh"
+                args: 
+                  - "Fn::GetParameter jenkins_plugins"
+                  - "Fn::GetParameter jenkins_web_agent_port"
+                  - "Fn::GetParameter jenkins_pipelines_path" 
+
+            - Type: "vagrant::vm:provision"
+              Properties:    
+                type: "shell"    
+                path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_safe_restart.sh"
+                args: 
+                  - "Fn::GetParameter jenkins_plugins"
+                  - "Fn::GetParameter jenkins_web_agent_port"
+                  - "Fn::GetParameter jenkins_pipelines_path" 
+
+            - Type: "vagrant::vm:provision"
+              Properties:    
+                type: "shell"    
+                path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_create_users.sh"
+                args: 
+                  - "Fn::GetParameter jenkins_plugins"
+                  - "Fn::GetParameter jenkins_web_agent_port"
+                  - "Fn::GetParameter jenkins_pipelines_path" 
+
+            - Type: "vagrant::vm:provision"
+              Properties:    
+                type: "shell"    
+                path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_import_pipelines.sh"
+                args: 
+                  - "Fn::GetParameter jenkins_plugins"
+                  - "Fn::GetParameter jenkins_web_agent_port"
+                  - "Fn::GetParameter jenkins_pipelines_path" 
+
+            # - Type: "metabox::custom::shell"
+            #   Properties:
+            #     hooks:
+            #       pre_vagrant: 
+            #         inline: 
+            #           - "echo 'Shutting down swarm client'" 
+            #           - "nohup sh ./scripts/jenkins2/shutdown_slave.sh"
+            #       vagrant:
+            #         inline: 
+            #           - "echo 'doing nothing'" 
+            #       post_vagrant: 
+            #         inline: 
+            #           - "echo 'Running new Swarm client...'" 
+            #           - "nohup sh ./scripts/jenkins2/init_slave.sh metabox-slave-${ENV:METABOX_GIT_BRANCH} &"        

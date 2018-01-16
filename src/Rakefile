@@ -1,0 +1,13 @@
+require "./metabox/lib/metabox.rb"
+
+# initialize metabox api client
+$mb_api = Metabox::ApiClient.new
+$mb_api.welcome_message
+
+# load all rake tasks
+Dir["./tasks/*.rb"].each {|file| 
+    require file 
+}
+
+# set default task
+task default: %w[test:nothing]

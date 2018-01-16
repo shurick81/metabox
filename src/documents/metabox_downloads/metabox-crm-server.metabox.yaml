@@ -1,0 +1,23 @@
+Metabox:
+  Description: Downloads CRM Server 2016
+    
+  Resources:
+    crm:
+      Type: "metabox::http::file_set"
+      Resources:  
+        crm2016-80:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "https://download.microsoft.com/download/3/4/F/34FB8C80-F245-41E7-AFE2-6388005A702B/CRM2016-Server-ENU-amd64.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/crm2016/CRM2016-Server-ENU-amd64.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "192882bccbc976b58f4259b4f9498edb1b23c526" 
+            Hooks:
+              Pre: 
+                Inline: 
+                  - "echo 'pre-download'" 
+              Post: 
+                Inline: 
+                  - "7z -v500m a zip/dist.zip CRM2016-Server-ENU-amd64.exe"

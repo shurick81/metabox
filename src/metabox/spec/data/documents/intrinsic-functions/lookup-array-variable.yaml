@@ -1,0 +1,14 @@
+Metabox:
+  Description: Join arrays
+  
+  Resources:
+    PropertyArrayJoin:
+      Type: "metabox::resource"
+      Properties:
+        ArrayJoin: 
+          Fn::Join:
+            - ":"
+            - - a
+              - b
+              - c 
+        ArrayShortJoin: { "Fn::Join": [ ",", [1,2,3] ] }

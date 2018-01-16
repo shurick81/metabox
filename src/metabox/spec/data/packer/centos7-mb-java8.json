@@ -1,0 +1,52 @@
+{
+    "variables": {
+      "metabox_git_branch": "master",
+      "centos7-mb-java8.yum": "git,vim,wget"
+    },
+
+    "builders": [
+      
+      {
+        "type": "vagrant",
+  
+        "box_name": "geerlingguy/centos7",
+        "box_provider": "virtualbox",
+        "box_file": ".ovf",
+  
+        "builder": {  
+          "output_directory" : "output-centos7-java8-{{ user `metabox_git_branch` }}",
+          "type": "virtualbox-ovf",
+          "headless": "true",
+          "boot_wait": "30s",
+          "ssh_username": "vagrant",
+          "ssh_password": "vagrant",
+          "ssh_wait_timeout": "8h",
+          "shutdown_command": "sudo -S sh -c '/usr/sbin/shutdown -h'",
+          "shutdown_timeout": "15m"
+        }
+        
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "scripts": [
+            "./scripts/shared/mb_printenv.sh",
+            "./scripts/shared/mb_yum_install.sh",
+            "./scripts/shared/mb_java8_install.sh"
+        ],
+        "environment_vars": [
+          "METABOX_YUM_PACKAGES={{ user `centos7-mb-java8.yum`  }}"
+        ],
+        "execute_command": "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'"        
+      }
+    ],
+    "post-processors": [
+      {
+        "type": "vagrant",
+        "keep_input_artifact": "false",
+        "output": "centos7-mb-java8-{{ user `metabox_git_branch` }}-{{.Provider}}.box"
+      }
+    ]
+  }
+  

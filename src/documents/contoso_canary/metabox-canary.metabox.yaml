@@ -1,0 +1,63 @@
+Metabox:
+  Description: Builds Vagrant VMs to trigger Vagrant box downloads. Later, these boxes are used with packer-vagrant builder to build other SOEs
+  Parameters:
+    # these boxes are used by windows 2012/2012-r2 metabox SOEs
+    box_win2012:    "opentable/win-2012-standard-amd64-nocm"
+    box_win2012_r2: "opentable/win-2012r2-standard-amd64-nocm"
+
+    # this box is used for metabox CI box to build up Jenkins2 with pipelines
+    box_centos7: "geerlingguy/centos7"
+
+    # standart hashicorp's precise64 for testing purposes
+    box_precise64: "hashicorp/precise64"
+
+    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-soe-carary-stacks"
+  Resources:
+    soe-canary:
+      Type: "vagrant::stack"
+      Resources:
+        win2012:
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter box_win2012"
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 2
+                memory: 512
+                machinefolder: "Fn::GetParameter custom_machine_folder"
+
+        win2012-r2:
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter box_win2012_r2"
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 2
+                memory: 512
+                machinefolder: "Fn::GetParameter custom_machine_folder"
+
+        centos7:
+          OS: linux
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter box_centos7"
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 2
+                memory: 512
+                machinefolder: "Fn::GetParameter custom_machine_folder"
+
+        precise64:
+          OS: linux
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter box_precise64"
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 2
+                memory: 512
+                machinefolder: "Fn::GetParameter custom_machine_folder"

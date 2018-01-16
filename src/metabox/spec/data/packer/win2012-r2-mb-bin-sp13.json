@@ -1,0 +1,119 @@
+{
+  "variables": {
+          "metabox_git_branch": "master",
+          "http_directory": "",
+          "headless" : "true",
+
+          "install_tmp_dir": "c:\\_mb_tmp_install",
+    
+          "sp2013sp1.source_http.zip_files": "sp2013sp1.zip.001,sp2013sp1.zip.002,sp2013sp1.zip.003,sp2013sp1.zip.004,sp2013sp1.zip.005",
+          "sp2013sp1.source_http.unzip_file": "sp2013sp1.zip.001",
+         
+          "sp2013sp1.source_http.iso_file_name": "en_sharepoint_server_2013_with_sp1_x64_dvd_3823428.iso",
+          "sp2013sp1.source_http.iso_dst_folder":  "c:\\_mb_tmp_install\\sp2013sp1-unpacked-install",
+    
+          "sp2013sp1.properties.product_key": "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+          },
+
+    "builders": [
+      
+      {
+        "type": "vagrant",
+  
+        "box_name": "win2012-r2-mb-app-{{ user `metabox_git_branch` }}",
+        "box_provider": "virtualbox",
+        "box_file": ".ovf",
+  
+        "builder": {  
+          "output_directory" : "output-win2012-r2-mb-bin-sp13-{{ user `metabox_git_branch` }}",
+          "type": "virtualbox-ovf",
+          "headless": "{{ user `headless` }}",
+          "boot_wait": "30s",
+          "ssh_username": "vagrant",
+          "ssh_password": "vagrant",
+          "ssh_wait_timeout": "8h",
+          "shutdown_command": "c:/windows/system32/sysprep/sysprep.exe /generalize /oobe /quiet /shutdown /unattend:c:/Windows/Temp/Autounattend_sysprep.xml",
+          "shutdown_timeout": "15m",
+          "http_directory": "{{ user `http_directory` }}"
+        }
+      }
+    ],
+    "provisioners": [
+
+      {
+        "type": "file",
+        "source": "./answer_files/2012_r2/Autounattend_sysprep.xml",
+        "destination": "c:/Windows/Temp/Autounattend_sysprep.xml"
+      },  
+  
+      {
+        "type": "powershell",
+        "scripts": [
+          "./scripts/_dist_helpers.ps1"
+        ],
+        "environment_vars": [
+          "METABOX_DOWNLOAD_FILES={{ user `sp2013sp1.source_http.zip_files` }}",
+          "METABOX_DOWNLOAD_FILES_DST={{ user `install_tmp_dir` }}",
+
+          "METABOX_UNZIP_SRC={{ user `install_tmp_dir` }}\\{{ user `sp2013sp1.source_http.unzip_file` }}", 
+          "METABOX_UNZIP_DST={{ user `install_tmp_dir` }}\\iso", 
+
+          "METABOX_ISO_SRC={{ user `install_tmp_dir` }}\\iso\\{{ user `sp2013sp1.source_http.iso_file_name` }}",
+          "METABOX_ISO_DST={{ user `sp2013sp1.source_http.iso_dst_folder` }}"  
+        ]
+      },
+
+      {
+        "type": "powershell",
+        "scripts": [
+             "./scripts/_sp2013_bin.ps1"
+        ],
+        "environment_vars": [
+          "METABOX_INSTALL_DIR={{ user `sp2013sp1.source_http.iso_dst_folder` }}",
+          "METABOX_SP_PRODUCT_KEY={{ user `sp2013sp1.properties.product_key` }}"
+        ]
+      },
+      {
+        "type": "powershell",
+        "scripts": [ 
+           "./scripts/_sys_reboot.ps1"
+        ]
+      },
+  
+      {
+        "pause_before": "2m",
+        "type": "powershell",
+        "scripts": [
+             "./scripts/_sp2013_bin.ps1"
+        ],
+        "environment_vars": [
+          "METABOX_INSTALL_DIR={{ user `sp2013sp1.source_http.iso_dst_folder` }}",
+          "METABOX_SP_PRODUCT_KEY={{ user `sp2013sp1.properties.product_key` }}"
+        ]
+      },
+      {
+        "type": "powershell",
+        "scripts": [ 
+           "./scripts/_sys_reboot.ps1"
+        ]
+      },
+
+      {
+        "pause_before": "2m",
+        "type": "powershell",
+        "inline": [
+          "Write-Host 'Ready to get SharePoint installed!'",
+          "Remove-Item -Recurse -Force \"{{ user `install_tmp_dir` }}\"",
+          "Remove-Item -Recurse -Force \"{{ user `sp2013sp1.source_http.iso_dst_folder` }}\""
+        ]
+      } 
+    ],
+    "post-processors": [
+      {
+        "type": "vagrant",
+        "keep_input_artifact": "false",
+        "output": "win2012-r2-mb-bin-sp13-{{ user `metabox_git_branch` }}-{{.Provider}}.box"
+      }
+    ]
+  }
+  

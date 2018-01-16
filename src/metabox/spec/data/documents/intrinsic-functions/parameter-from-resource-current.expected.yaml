@@ -1,0 +1,14 @@
+Metabox:
+  Description: Can resolve parameter values from the same resource
+  Resources:
+    MasterResource:
+      Type: "metabox::resource"
+      Parameters:
+        MyParam1: "MyParam1-Value"
+        MyParam2: "MyParam2-Value"
+
+      Properties:
+        # lookup resouce property from the current resource
+        Value1: "MyParam1-Value"
+        Value2: "MyParam2-Value"
+  

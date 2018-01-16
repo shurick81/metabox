@@ -1,0 +1,1 @@
+metabox file with content, it is used to test file-transfer over HTTP

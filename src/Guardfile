@@ -1,0 +1,67 @@
+# A sample Guardfile
+# More info at https://github.com/guard/guard#readme
+
+## Uncomment and set this to only include directories you want to watch
+# directories %w(app lib config test spec features) \
+#  .select{|d| Dir.exists?(d) ? d : UI.warning("Directory #{d} does not exist")}
+
+## Note: if you are using the `directories` clause above and you are not
+## watching the project directory ('.'), then you will want to move
+## the Guardfile to a watched dir and symlink it back, e.g.
+#
+#  $ mkdir config
+#  $ mv Guardfile config/
+#  $ ln -s config/Guardfile .
+#
+# and, you'll have to watch "config/Guardfile" instead of "Guardfile"
+
+# guard runs specific unit tests continuously
+guard :rspec, cmd: 'rspec' do
+    
+    top_folder = "metabox"
+
+    watch("#{top_folder}/spec/spec_helper.rb")  { 
+        target_cmd = [    
+            "clear",
+            "echo $(pwd) && echo 'Running spec_helper'",
+            "rspec metabox/spec --format documentation"
+        ].join(' && ')
+
+        puts "Running: #{target_cmd}"
+        system(target_cmd)
+    }
+
+    # local dev -> spec file update
+    watch(%r{^#{top_folder}/lib/(.+)\.rb$})     { |m|
+        
+        target_spec_file = "#{top_folder}/spec/#{m[1]}_spec.rb"
+        
+        target_cmd = [
+            "clear", 
+            "echo 'Running file: #{target_spec_file}'",       
+            "echo $(pwd)",
+            "export simplecov_custom_filters='^(?!\\/#{m[0].gsub('/','\\/')})'",
+            "rspec --pattern #{target_spec_file} --format documentation"
+        ].join(" && ")
+
+        puts "Running: #{target_cmd}"
+        system(target_cmd)
+    }
+
+    # local spec file update
+    watch(%r{^#{top_folder}/spec/(.+)\_spec.rb$})     { |m|
+    
+        target_spec_file = "#{m[0]}"
+        target_cmd = [
+            "clear",
+            "echo $(pwd)",
+            "export simplecov_custom_filters='^(?!\\/#{m[0].gsub('spec','lib').gsub('_spec','').gsub('/','\\/')})'",
+            "echo 'Running spec file: #{target_spec_file}'", 
+            "rspec --pattern #{target_spec_file} --format documentation"
+        ].join(' && ')                 
+
+        puts "Running: #{target_cmd}"
+        system(target_cmd)
+    }
+    
+end

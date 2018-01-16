@@ -1,0 +1,81 @@
+Metabox:
+  Description: Builds a windows 2016 SOE image
+  Parameters:
+    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox_canary_win2016"
+
+  Resources:
+    win2016-mb-app:
+      Type: "metabox::packer::build"
+      Parameters:
+        box_name: "win2016-mb-soe-${ENV:METABOX_GIT_BRANCH}"
+      Properties:
+        PackerFileName: "win2016-mb-app.json"
+        VagrantBoxName: "win2016-mb-app-${ENV:METABOX_GIT_BRANCH}"
+        PackerTemplate:
+          variables:
+            metabox_git_branch: "Fn::Env METABOX_GIT_BRANCH"
+            metabox_working_dir: "Fn::Env METABOX_WORKING_DIR"
+            http_directory: "Fn::Env METABOX_DOWNLOADS_PATH"
+          builders:
+            - Type: "packer::builders::vagrant_win16_sysprep"
+              Properties:
+                box_name: "Fn::GetParameter box_name"
+                builder:
+                  guest_additions_mode: "attach"
+                  communicator: "winrm"
+                  winrm_username: "vagrant"
+                  winrm_password: "vagrant"
+                  winrm_timeout: "12h"
+                  output_directory: "{{ user `metabox_working_dir` }}/packer_output/win2016-mb-app-{{ user `metabox_git_branch` }}"
+                  http_directory: "{{ user `http_directory` }}"
+
+          provisioners:
+            # supporting files for sysprep 2016
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/win2016/run-sysprep.cmd"
+              destination: "c:/run-sysprep.cmd"
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/win2016/run-sysprep.ps1"
+              destination: "c:/run-sysprep.ps1"
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/answer_files/2016/Autounattend_sysprep.xml"
+              destination: "c:/Autounattend_sysprep.xml"
+          
+            # metabox PS helpers
+            # - type: "file"
+            #   source: "./scripts/packer/metabox.packer.core/_metabox_core.ps1"
+            #   destination: "c:/Windows/Temp/_metabox_core.ps1"
+
+            # NET core install and reboot
+            # two hits with METABOX_DSC_CHECK=1 flag to mitigate glitches
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_install-netcore-feature.ps1"
+            - type: "windows-restart"
+
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_install-netcore-feature.ps1"
+              environment_vars:
+                - "METABOX_DSC_CHECK=1"
+
+            # # install other features required by SharePoint 2013
+            # # we aim to cur time required to prepare SharePoint bin box
+            # # two hits to ensure all glitches 
+            # - type: "powershell"
+            #   scripts:
+            #     - "./scripts/packer/metabox.packer.core/_install-sp16-features.ps1"
+            # - type: "windows-restart"
+
+            # - type: "powershell"
+            #   scripts:
+            #     - "./scripts/packer/metabox.packer.core/_install-sp16-features.ps1"
+            
+            # finilizing the box
+            # additional restart to ensure no pending reboots are here
+            - type: "windows-restart"
+           
+          post-processors: 
+            - Type:  "packer::post-processors::vagrant"
+              Properties:
+                output: "{{ user `metabox_working_dir` }}/packer_boxes/win2016-mb-app-{{ user `metabox_git_branch` }}-{{.Provider}}.box"

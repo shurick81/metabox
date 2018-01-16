@@ -1,0 +1,9 @@
+Metabox:
+  Description: Join arrays
+  
+  Resources:
+    PropertyArrayJoin:
+      Type: "metabox::resource"
+      Properties:
+        ArrayJoin: 'a:b:c'
+        ArrayShortJoin: '1,2,3'

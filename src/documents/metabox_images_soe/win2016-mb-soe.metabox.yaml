@@ -1,0 +1,88 @@
+Metabox:
+  Description: Builds a windows 2016 SOE image
+  Parameters:
+    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox_canary_win2016"
+
+  Resources:
+    win2016-mb-soe:
+      Type: "metabox::packer::build"
+      Parameters:
+      Properties:
+        PackerFileName: "win2016-mb-soe.json"
+        VagrantBoxName: "win2016-mb-soe-${ENV:METABOX_GIT_BRANCH}"
+        PackerTemplate:
+          variables:
+            metabox_git_branch: "Fn::Env METABOX_GIT_BRANCH"
+            metabox_working_dir: "Fn::Env METABOX_WORKING_DIR"
+            
+            iso_checksum: "18a4f00a675b0338f3c7c93c4f131beb"
+            iso_url:      "http://care.dlservice.microsoft.com/dl/download/1/6/F/16FA20E6-4662-482A-920B-1A45CF5AAE3C/14393.0.160715-1616.RS1_RELEASE_SERVER_EVAL_X64FRE_EN-US.ISO"
+
+          builders:
+            - Type: "packer::builders::packer_win16_sysprep"
+              Properties:
+                "output_directory" : "{{ user `metabox_working_dir` }}/packer_output/win2016-mb-soe-{{ user `metabox_git_branch` }}"
+              
+                "iso_url": "{{ user `iso_url` }}"
+                "iso_checksum": "{{ user `iso_checksum` }}"
+                "iso_checksum_type": "md5"
+          
+          provisioners:
+            # supporting files for sysprep 2016
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/win2016/run-sysprep.cmd"
+              destination: "c:/run-sysprep.cmd"
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/win2016/run-sysprep.ps1"
+              destination: "c:/run-sysprep.ps1"
+
+            - type: "file"
+              source: "./scripts/packer/metabox.packer.core/answer_files/2016/Autounattend_sysprep.xml"
+              destination: "c:/Autounattend_sysprep.xml"
+
+            # metabox PS helpers
+            # - type: "file"
+            #   source: "./scripts/packer/metabox.packer.core/_metabox_core.ps1"
+            #   destination: "c:/Windows/Temp/_metabox_core.ps1"
+
+            # pre-install virtual box additions
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_install-virtualboxadditions.ps1"
+              only: 
+                - "virtualbox-iso"
+
+            # installing all required features, rebooting
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/win2016/_install-features-win16.ps1"
+            - type: "windows-restart"
+
+            # bootstrapping chocolatey
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_choco_bootstrap.ps1"
+            
+            # adding chocolatey packages, PS gallery, DSC modules
+            - type: "powershell"
+              scripts:
+                - "./scripts/packer/metabox.packer.core/_choco_packages.ps1"
+                - "./scripts/packer/metabox.packer.core/_setup-ps-nuget.ps1"
+                - "./scripts/packer/metabox.packer.core/_install-dsc-modules.ps1"
+                
+            # installing updates
+            - type: "powershell"
+              inline: 
+                - "Write-Host 'Installing updates...'"
+                - "Get-WUInstall -WindowsUpdate -AcceptAll -UpdateType Software -IgnoreReboot"
+              elevated_user: "vagrant"
+              elevated_password: "vagrant"
+
+            # additional reboot to get all updates applied
+            - type: "windows-restart"
+              restart_timeout: 45m
+           
+          post-processors: 
+            - Type:  "packer::post-processors::vagrant"
+              Properties:
+                output: "{{ user `metabox_working_dir` }}/packer_boxes/win2016-mb-soe-{{ user `metabox_git_branch` }}-{{.Provider}}.box"

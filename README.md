@@ -48,6 +48,11 @@ Built-in support for Vagrant VMs:
 
 Altogether, metabox offers an end-to-end workflow to build SharePoint environments in fully automated manner. In turns, metabox can also be run under CI/CD pipelines.
 
+## Getting started guides
+* Windows 2012 stack (in progress)
+* [Windows 2012-R2 stack](https://github.com/subpointsolutions/metabox/wiki/metabox-guides-win2012-r2)
+* Windows 2016 stack (in progress)
+
 ## Tech overview
 Metabox itself is a Ruby-based application. The following technology stack is used to get all things up and running:
 

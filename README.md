@@ -1,4 +1,6 @@
 
+# Metabox
+
 Metabox is an enhancement API layer on top of Packer/Vagrant tools to simplify machine image builds and Vagrant VMs management. It hides low-level details of Packer/Vagrant offering a consistent, YAML-based workflow to describe, author and manage Packer images and Vagrant virtual machines.
  
 Initially, metabox was developed by Aleksandr Sapozhkov (@shurick81) and Anton Vishnyakov (@avishnyakov). An early beta version of metabox was designed to provide disposable SharePoint environments for the SPMeta2 project late 2017.  A few month later, we pushed metabox further enabling automation of SharePoint 2013/2016 deployments with a consistent, repeatable and disposable workflow on Windows 2012, 2012 R2, 2016 using SQL 2012, 2014, 2016 and various versions of Visual Studio on top: 2013, 2015 and 2017.

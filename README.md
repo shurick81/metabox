@@ -38,7 +38,7 @@ Built-in support for Packer images:
 
 * Win2016 platform:
   * Win2016 SOE (standard operation system)
-  * Win2016 R2 + SharePoint 2016 RTM (in progress)
+  * Win2016 + SharePoint 2016 RTM (in progress)
 
 Built-in support for Vagrant VMs:
 * DC role - domain controller VM

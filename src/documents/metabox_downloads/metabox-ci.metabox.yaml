@@ -1,0 +1,29 @@
+Metabox:
+  Description: Downloads additional software
+    
+  Resources:
+    metabox-ci:
+      Type: "metabox::http::file_set"
+      Resources:
+        jdk-8u141-linux-x64:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/jdk-8u141-linux-x64/jdk-8u144-linux-x64.tar.gz"
+            Options:
+              - "--no-check-certificate"
+              - "--no-cookies" 
+              - '--header "Cookie: oraclelicense=accept-securebackup-cookie"'
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "d6eb6e5b263b946b0793dd3c8dd6c294f28974c5" 
+            Hooks:
+              Pre: 
+                Inline: 
+                  - "echo 'pre-download'" 
+              Post: 
+                Inline: 
+                  - "echo 'post-download'"       
+        
+       

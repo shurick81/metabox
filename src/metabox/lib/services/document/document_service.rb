@@ -20,8 +20,14 @@ module Metabox
 
         def generate(params)
 
-            log.debug "Cleaning up previous builds..."
-            _process_cleanup
+            # don't clean up every time
+            # all documents share the same scripts folder
+            # hence, parallel builds would fail deleting each other's script folder
+            # we'll fix this in later releases providing a dedicated snapshot of the script folder
+            # for evety build
+
+            #log.debug "Cleaning up previous builds..."
+            #_process_cleanup
 
             log.debug "Running generators..."
 

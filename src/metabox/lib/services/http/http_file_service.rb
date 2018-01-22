@@ -54,6 +54,7 @@ module Metabox
             
             src = get_section_value(resource.values.first, "Properties.SourceUrl")
             dst = get_section_value(resource.values.first, "Properties.DestinationPath")
+            options = get_section_value(resource.values.first, "Properties.Options", [])
 
             should_download = _process_checksum(resource_name, resource, dst)
 
@@ -65,7 +66,8 @@ module Metabox
                 # download
                 _download_file(
                     src: src,
-                    dst: dst
+                    dst: dst,
+                    options: options
                 )
 
                 file_sha1_value = _get_file_sha1_value(dst)
@@ -131,13 +133,15 @@ module Metabox
             end
         end
 
-        def _download_file(src:, dst:)
+        def _download_file(src:, dst:, options: [])
 
             dst_folder = File.basename dst
             log.debug "Ensuring folder: #{dst_folder}"
             FileUtils.mkdir_p dst_folder
 
-            cmd = _get_download_tool_cmd % {src: src, dst: dst}                            
+            options_string = options.join(' ')
+
+            cmd = _get_download_tool_cmd % {src: src, dst: dst, options: options_string }                            
             data = {:out => [], :err => []}
 
             log.info "Running download: #{cmd}"

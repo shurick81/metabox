@@ -1,4 +1,4 @@
-Describe 'SQL Server minimal configuration' {
+Describe 'SQL Server 2016 minimal configuration' {
 
     Context "SQL Server" {
         
@@ -10,14 +10,5 @@ Describe 'SQL Server minimal configuration' {
             (get-service SQLSERVERAGENT).Status | Should BeLike "Running"
         }
  
-     }
-
-    Context "SQL Tools" {
-       
-        It 'Ssms.exe is installed' {
-            get-command ssms | Should BeLike "*ssms.exe*"
-        }
-
-    }
-    
+     }    
 }

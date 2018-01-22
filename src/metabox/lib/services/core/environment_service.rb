@@ -247,7 +247,7 @@ module Metabox
             result
         end
 
-        def get_metabox_download_tool_cmd(default_value = "wget \"%<src>s\" -O %<dst>s")
+        def get_metabox_download_tool_cmd(default_value = "wget \"%<src>s\" %<options>s -O %<dst>s")
             result = __env.fetch('METABOX_FILESET_THREADS', default_value)
             result
         end

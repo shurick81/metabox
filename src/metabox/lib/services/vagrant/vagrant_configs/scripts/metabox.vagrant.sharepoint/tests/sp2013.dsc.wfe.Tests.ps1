@@ -1,4 +1,4 @@
-Describe 'SQL Server 12' {
+Describe 'SharePoint 2013' {
 
     function Is-Service-Running($serviceName)
     {

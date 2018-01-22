@@ -1,20 +1,17 @@
 
-$installDir = $ENV:METABOX_INSTALL_DIR
+# fail on errors and include metabox helpers
+$ErrorActionPreference = "Stop"
 
-if($installDir -eq $null) {
-    throw "METABOX_INSTALL_DIR env var is null or empty"
-} else {
-    Write-Host "Using [ENV:METABOX_INSTALL_DIR]: $installDir"
-}
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-Write-Host "Checking if prerequisiteinstaller is still running..."
+Log-MbInfoMessage "Running SharePoint prerequisiteinstaller..."
+Trace-MbEnv
 
-while( ( get-process | Where-Object { $_.ProcessName.ToLower() -eq "prerequisiteinstaller" } ) -ne $null) {
-    Write-Host "prerequisiteinstaller is still running... sleeping 5 sec.."
-    Start-Sleep -Seconds 5
-}
+$installDir = Get-MbEnvVariable "METABOX_INSTALL_DIR"
 
-Write-Host "Running DSC: SP2013_InstallPrereqs"
+Log-MbInfoMessage "Checking if prerequisiteinstaller is still running..."
+Wait-MbProcess "prerequisiteinstaller"
 
 Configuration SP2013_InstallPrereqs
 {
@@ -36,7 +33,7 @@ Configuration SP2013_InstallPrereqs
     }
 }
 
-$cd = @{
+$config = @{
     AllNodes = @(
         @{
             NodeName = 'localhost'
@@ -49,30 +46,6 @@ $cd = @{
     )
 }
 
-if(Test-Path SP2013_InstallPrereqs)
-{
-    Remove-Item SP2013_InstallPrereqs -Recurse -Force
-}
+Apply-MbDSC "SP2013_InstallPrereqs" $config 
 
-Write-Host "`t - running SP2013_InstallPrereqs DSC config..."
-
-SP2013_InstallPrereqs -ConfigurationData $cd;
-Start-DscConfiguration SP2013_InstallPrereqs -Force -Wait -Verbose 
-
-$result = Test-DscConfiguration SP2013_InstallPrereqs
-Write-Host $result
-
-if($ENV:METABOX_DSC_CHECK -ne $null) {
-    Write-Host "METABOX_DSC_CHECK: $($ENV:METABOX_DSC_CHECK)"
-    Write-Host "Expecting DSC in a desired state"
-
-    if($result.InDesiredState -ne $true) {
-        Write-Host "DSC Resource is not in a desired state"
-        exit -1
-    }
-} else {
-    Write-Host "METABOX_DSC_CHECK: $($ENV:METABOX_DSC_CHECK)"
-    Write-Host "No DSC check is needed"
-}
-
-Write-Host "`t - running SP2013_InstallPrereqs DSC config completed!"
+exit 0

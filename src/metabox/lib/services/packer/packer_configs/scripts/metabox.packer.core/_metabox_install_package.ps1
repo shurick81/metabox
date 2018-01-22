@@ -11,12 +11,14 @@ $packageName        = Get-MbEnvVariable "METABOX_APP_PACKAGE_NAME"
 $packageFilePath    = Get-MbEnvVariable "METABOX_APP_PACKAGE_FILE_PATH"
 $silentArgs         = Get-MbEnvVariable "METABOX_APP_PACKAGE_SILENT_ARGS"
 $exitCodes          = Get-MbEnvVariable "METABOX_APP_PACKAGE_EXIT_CODES"
+$fileType           = Get-MbEnvVariable "METABOX_APP_PACKAGE_FILE_TYPE" "message" "msu"
 
 $exitCodes = $exitCodes.split(',')
 
 $result = Install-MbInstallPackage -filePath $packageFilePath `
                         -packageName $packageName `
                         -silentArgs $silentArgs `
-                        -validExitCodes $exitCodes
+                        -validExitCodes $exitCodes `
+                        -fileType $fileType
 
 exit $result

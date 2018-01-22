@@ -1,4 +1,4 @@
-Describe 'SQL Server 12' {
+Describe 'SharePoint 2016' {
 
     function Is-Service-Running($serviceName)
     {
@@ -9,7 +9,7 @@ Describe 'SQL Server 12' {
 
         It 'World Wide Web Publishing Service' {
             Is-Service-Running "World Wide Web Publishing Service"
-         }
+        }
 
     }
 
@@ -23,8 +23,8 @@ Describe 'SQL Server 12' {
             Is-Service-Running "SharePoint Search Host Controller"
          }
 
-         It 'SharePoint Server Search 15' {
-            Is-Service-Running "SharePoint Server Search 15"
+         It 'SharePoint Server Search 16' {
+            Is-Service-Running "SharePoint Server Search 16"
          }
 
          It 'SharePoint Timer Service' {

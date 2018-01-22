@@ -54,3 +54,22 @@ Metabox:
               Post: 
                 Inline: 
                   - "7z -v500m a zip/dist.zip SQLServer2016-x64-ENU.iso"
+
+        sql-ssms17.04:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "https://go.microsoft.com/fwlink/?linkid=864329"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/sql-ssms17.04/ssms-setup-enu.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "fb48d148724ca62b330fc23ea31d080ef5607608" 
+            Hooks:
+              Pre: 
+                Inline: 
+                  - "echo 'pre-download'" 
+              Post: 
+                Inline: 
+                  - "7z -v500m a zip/dist.zip ssms-setup-enu.exe"
+
+        

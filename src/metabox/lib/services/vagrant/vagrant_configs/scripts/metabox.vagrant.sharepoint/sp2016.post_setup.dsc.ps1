@@ -1,33 +1,17 @@
-param (
-    [string]$DomainName = "meta.local",
-    [string]$DomainUserName = "admin",
-    [string]$DomainUserPassword = "u8wxvKQ2zn"
-)
+# fail on errors and include metabox helpers
+$ErrorActionPreference = "Stop"
 
-# trace
-Write-Host "Running SharePoint post-setup tuning..."
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-Configuration SPFarmTuning
+# include shared halpers from metabox.vagrant.sharepoint handler
+Include-MbSharedHandlerScript "metabox.vagrant.sharepoint" "sp.helpers.ps1"
+
+Log-MbInfoMessage "Running SharePoint post-setup tuning..."
+Trace-MbEnv
+
+Configuration Install_SharePointFarmTuning
 {
-    $DomainUserName = "meta\vagrant"
-    $DomainUserPassword = "vagrant"
-
-    $passPhrase = "u8wxvKQ2zn"
-
-    $secpasswd = ConvertTo-SecureString $DomainUserPassword -AsPlainText -Force
-    $DomainCreds = New-Object System.Management.Automation.PSCredential($DomainUserName, $secpasswd)
-    
-    $secPassPhrase = ConvertTo-SecureString $passPhrase -AsPlainText -Force
-    $PassPhraseCreds = New-Object System.Management.Automation.PSCredential($DomainUserName, $secPassPhrase)
-    
-
-    $SPSetupAccount = $DomainCreds
-    $Passphrase = $PassPhraseCreds
-    $FarmAccount = $DomainCreds
-
-    $ServicePoolManagedAccount = $DomainCreds
-    $WebPoolManagedAccount = $DomainCreds
-
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName SharePointDsc
     Import-DscResource -ModuleName xWebAdministration
@@ -55,7 +39,7 @@ Configuration SPFarmTuning
 
         Service SharePointServerSearch15 {
             Ensure = "Present"
-            Name = "OSearch15"
+            Name = "OSearch16"
             StartupType = "Automatic"
             State = "Running"
         }
@@ -113,28 +97,21 @@ Configuration SPFarmTuning
      }
 }
 
-$cd = @{
+$config = @{
     AllNodes = @(
         @{
             NodeName = 'localhost'
 
             PSDscAllowDomainUser = $true
             PSDscAllowPlainTextPassword = $true
-
-            DomainUserName = $domainUserName
-            DomainUserPassword = $domainUserPassword
-
-            RetryCount = 10           
-            RetryIntervalSec = 30
         }
     )
 }
 
+# ensuring IIS is up
+Safe-MbIISReset
 
-if(Test-Path SPFarmTuning)
-{
-    Remove-Item SPFarmTuning -Recurse -Force
-}
+# ensuring other services are up
+Apply-MbDSC "Install_SharePointFarmTuning" $config 
 
-SPFarmTuning -ConfigurationData $cd;
-Start-DscConfiguration SPFarmTuning -Force -Wait -Verbose 
+exit 0

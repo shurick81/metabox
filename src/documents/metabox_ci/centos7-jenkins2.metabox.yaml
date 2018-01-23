@@ -3,13 +3,13 @@ Metabox:
   Parameters:
     jenkins_package_name  : "jenkins-2.84-1.1"
 
-    jenkins_plugins       : "blueocean,ace-editor,antisamy-markup-formatter,authentication-tokens,bouncycastle-api,branch-api,cloudbees-folder,credentials-binding,credentials,display-url-api,docker-commons,docker-workflow,durable-task,git-client,git,git-server,handlebars,jackson2-api,jquery-detached,jsch,junit,mailer,mapdb-api,matrix-auth,matrix-project,momentjs,pipeline-build-step,pipeline-graph-analysis,pipeline-input-step,pipeline-milestone-step,pipeline-model-api,pipeline-model-declarative-agent,pipeline-model-definition,pipeline-model-extensions,pipeline-rest-api,pipeline-stage-step,pipeline-stage-tags-metadata,pipeline-stage-view,plain-credentials,scm-api,scm-sync-configuration,script-security,ssh-agent,ssh-credentials,ssh-slaves,ssh,structs,subversion,windows-slaves,workflow-aggregator,workflow-api,workflow-basic-steps,workflow-cps-global-lib,workflow-cps,workflow-durable-task-step,workflow-job,workflow-multibranch,workflow-scm-step,workflow-step-api,workflow-support"
-    jenkins_ui_port       : 8082
-    jenkins_web_agent_port: 33977
+    jenkins_plugins       : "blueocean,ace-editor,antisamy-markup-formatter,authentication-tokens,bouncycastle-api,branch-api,cloudbees-folder,credentials-binding,credentials,display-url-api,docker-commons,docker-workflow,durable-task,git-client,git,git-server,handlebars,jackson2-api,jquery-detached,jsch,junit,mailer,mapdb-api,matrix-auth,matrix-project,momentjs,pipeline-build-step,pipeline-graph-analysis,pipeline-input-step,pipeline-milestone-step,pipeline-model-api,pipeline-model-declarative-agent,pipeline-model-definition,pipeline-model-extensions,pipeline-rest-api,pipeline-stage-step,pipeline-stage-tags-metadata,pipeline-stage-view,plain-credentials,scm-api,scm-sync-configuration,script-security,ssh-agent,ssh-credentials,ssh-slaves,ssh,structs,subversion,windows-slaves,workflow-aggregator,workflow-api,workflow-basic-steps,workflow-cps-global-lib,workflow-cps,workflow-durable-task-step,workflow-job,workflow-multibranch,workflow-scm-step,workflow-step-api,workflow-support,swarm"
+    jenkins_ui_port       : "${ENV:METABOX_JENKINS_UI_PORT}"
+    jenkins_web_agent_port: "${ENV:METABOX_JENKINS_WEB_AGENT_PORT}"
     jenkins_pipelines_path: "/vagrant/scripts/vagrant/centos7-mb-jenkins2/pipelines"
 
     custom_machine_folder : "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-ci-stack"
-    metabox_ci_box_name   : "centos7-mb-jenkins2-${ENV:METABOX_GIT_BRANCH}" 
+    metabox_ci_box_name   : "${ENV:METABOX_CI_BOX_NAME}" 
   Resources:
     
     centos7-mb-jenkins2:
@@ -51,12 +51,12 @@ Metabox:
               Properties:
                 output: "{{ user `metabox_working_dir` }}/packer_boxes/centos7-mb-jenkins2-{{ user `metabox_git_branch` }}-{{.Provider}}.box"
         
-    metabox-ci:
+    "metabox-ci":
       Type: "vagrant::stack"
       Parameters:
         soe_box_name: "Fn::GetParameter metabox_ci_box_name"
       Resources:
-        jenkins2:
+        "jenkins2-${ENV:METABOX_JENKINS_INSTANCE_NAME}":
           OS: 'linux'
           VagrantTemplate:
             - Type: "vagrant::config::vm"
@@ -82,6 +82,7 @@ Metabox:
                 host: "Fn::GetParameter jenkins_web_agent_port"
                 
             - Type: "vagrant::vm:provision"
+              Tags: [ "j2-plugins" ]
               Properties: 
                 type: "shell"
                 path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_configure_plugins.sh"
@@ -91,6 +92,7 @@ Metabox:
                   - "Fn::GetParameter jenkins_pipelines_path"
             
             - Type: "vagrant::vm:provision"
+              Tags: [ "j2-settings" ]
               Properties:    
                 type: "shell"    
                 path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_configure_settings.sh"
@@ -100,6 +102,7 @@ Metabox:
                   - "Fn::GetParameter jenkins_pipelines_path" 
 
             - Type: "vagrant::vm:provision"
+              Tags: [ "j2-restart" ]
               Properties:    
                 type: "shell"    
                 path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_safe_restart.sh"
@@ -109,6 +112,7 @@ Metabox:
                   - "Fn::GetParameter jenkins_pipelines_path" 
 
             - Type: "vagrant::vm:provision"
+              Tags: [ "j2-users" ]
               Properties:    
                 type: "shell"    
                 path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_create_users.sh"
@@ -118,6 +122,8 @@ Metabox:
                   - "Fn::GetParameter jenkins_pipelines_path" 
 
             - Type: "vagrant::vm:provision"
+              Name: "Pipelines"
+              Tags: [ "j2-pipelines" ]
               Properties:    
                 type: "shell"    
                 path: "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_import_pipelines.sh"
@@ -126,17 +132,18 @@ Metabox:
                   - "Fn::GetParameter jenkins_web_agent_port"
                   - "Fn::GetParameter jenkins_pipelines_path" 
 
-            # - Type: "metabox::custom::shell"
-            #   Properties:
-            #     hooks:
-            #       pre_vagrant: 
-            #         inline: 
-            #           - "echo 'Shutting down swarm client'" 
-            #           - "nohup sh ./scripts/jenkins2/shutdown_slave.sh"
-            #       vagrant:
-            #         inline: 
-            #           - "echo 'doing nothing'" 
-            #       post_vagrant: 
-            #         inline: 
-            #           - "echo 'Running new Swarm client...'" 
-            #           - "nohup sh ./scripts/jenkins2/init_slave.sh metabox-slave-${ENV:METABOX_GIT_BRANCH} &"        
+            - Type: "metabox::custom::shell"
+              Name: "Custom pre/post script handler"
+              Properties:
+                hooks:
+                  pre_vagrant: 
+                    inline: 
+                      - "echo 'Metabox: shutting down swarm client'" 
+                      - "nohup sh ./scripts/jenkins2/shutdown_slave.sh"
+                  vagrant:
+                    inline: 
+                      - "echo 'doing nothing'" 
+                  post_vagrant: 
+                    inline: 
+                      - "echo 'Metabox: running new Swarm client...'" 
+                      - "nohup sh ./scripts/jenkins2/init_slave.sh metabox-slave-${ENV:METABOX_GIT_BRANCH} ${ENV:METABOX_JENKINS_UI_PORT} &"        

@@ -37,7 +37,7 @@ module Metabox
                         FileUtils.mkdir_p to_path
                         log.debug "Copying script folder: #{src} -> #{dst}"
     
-                        FileUtils.copy_entry src, dst
+                        FileUtils.copy_entry(src, dst, remove_destination: true)
                     else
                         log.debug "Skipping script folder, it does not exist: #{src} -> #{dst}"
                     end

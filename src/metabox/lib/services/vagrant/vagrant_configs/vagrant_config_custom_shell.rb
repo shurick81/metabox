@@ -56,10 +56,10 @@ module Metabox
                     return
                 end
 
-                home_folder = env_service.get_metabox_working_dir
+                home_folder = env_service.get_metabox_vagrant_dir
 
                 scripts.each do | script |
-                    run_cmd(cmd: "cd #{home_folder} && #{script}")
+                    run_cmd(cmd: "#{script}", pwd: home_folder)
                 end
             end
 

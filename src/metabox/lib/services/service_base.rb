@@ -145,8 +145,8 @@ module Metabox
             get_service(Metabox::DocumentService)
         end
 
-        def run_cmd(cmd:, silent: false)
-            os_service.run_cmd(cmd:cmd, silent: silent)
+        def run_cmd(cmd:, silent: false, pwd: nil)
+            os_service.run_cmd(cmd:cmd, silent: silent, pwd: pwd)
         end
 
         def create_packer_vars_file(template_name:)

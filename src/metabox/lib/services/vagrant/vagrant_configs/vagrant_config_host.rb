@@ -18,14 +18,14 @@ module Metabox
                 host_name = get_host_name(environment_name: _get_environment_name, vm_name: _get_vm_name)
 
                 log.warn "Configuring host #{vm_name}"
-                log.info " hostname: #{host_name}"
+                log.info " hostname:    #{host_name}"
                 vm_config.vm.hostname = host_name
 
                 host_ip = get_ip_address(environment_name: _get_environment_name, vm_name: _get_vm_name)
                 gateway_ip = get_environment_ip_range(name: _get_environment_name) + ".1"
                 
-                log.info " host_ip: #{host_ip}"
-                log.info " gateway_ip: #{gateway_ip}"
+                log.info " host_ip:     #{host_ip}"
+                log.info " gateway_ip:  #{gateway_ip}"
                 
                 vm_config.vm.network :private_network, ip: host_ip, gateway: gateway_ip
         

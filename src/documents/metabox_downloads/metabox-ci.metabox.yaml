@@ -18,12 +18,3 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "d6eb6e5b263b946b0793dd3c8dd6c294f28974c5" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post-download'"       
-        
-       

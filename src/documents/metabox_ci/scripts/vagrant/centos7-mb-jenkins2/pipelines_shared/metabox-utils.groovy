@@ -134,39 +134,46 @@ void runMetaboxPackerOutputClean(mbSrcPath) {
     runRakeTask(mbSrcPath, "packer:clean", "output")
 }
 
+void runMetaboxFilesetDownload(mbSrcPath) {
+
+    jobParts = env.JOB_NAME.split('/').last().split("\\+")
+    
+    filesetName  = jobParts[0]
+    resourceName = jobParts[1]
+
+    resourceFullName = filesetName + "::" + resourceName
+    
+    stage("fileset:download") {
+        runCmd("cd $mbSrcPath && rake fileset:download[$resourceFullName]")
+    }
+}
+
 void runMetaboxPackerBuild(mbSrcPath, String packerFileName = null) {
 
-    resourceName = env.JOB_NAME.split('metabox-packer-')[1]
-
-    if(packerFileName == null) {
-        packerFileName = resourceName + ".json";
-    }
+    resourceName = env.JOB_NAME.split('/').last()
 
     try {
 
-        stage ("document:generate") {
-            runRakeTask(mbSrcPath, "document:generate")
+        stage ("resource:generate") {
+            runRakeTask(mbSrcPath, "resource:generate")
         }
 
-        stage ("document:list") {
-            runRakeTask(mbSrcPath, "document:list")
+        stage ("resource:list") {
+            runRakeTask(mbSrcPath, "resource:list")
         }
 
         stage ("packer:build") {
-            runRakeTask(mbSrcPath, "packer:build[${resourceName}]")
+            runRakeTask(mbSrcPath, "packer:build[${resourceName},--force]")
         }
 
         stage ("vagrant:add") {
-            runRakeTask(mbSrcPath, "vagrant:add[${resourceName}]")
+            runRakeTask(mbSrcPath, "vagrant:add[${resourceName},--force]")
         }
 
         stage ("vagrant:list") {
-            runCmd("cd $mbSrcPath && rake vagrant:list")
+            runRakeTask(mbSrcPath, "vagrant:box_list")
         }
 
-        // stage ("packer:clean") {
-        //     //runRakeTask(mbSrcPath, "packer:clean", packerFileName)
-        // }
     } catch(e) {
         echo "Failed to run build: ERROR - $e"
         throw e
@@ -177,9 +184,120 @@ void runMetaboxPackerBuild(mbSrcPath, String packerFileName = null) {
 
 }
 
-void runMetaboxVagrantGlobalstatus(mbSrcPath)
+void runMetaboxVagrantGlobalStatus(mbSrcPath)
 {
-    runRakeTask(mbSrcPath, "vagrant:globalstatus", "output")
+    runRakeTask(mbSrcPath, "vagrant:global_status")
+}
+
+void runMetaboxVagrantStackDestroyAll(mbSrcPath) 
+{
+    // meaning, second from the 'last'
+    stackName = env.JOB_NAME.split('/')[-2]
+
+    try {
+
+        stage ("resource:generate") {
+            runRakeTask(mbSrcPath, "resource:generate")
+        }
+
+        stage ("resource:list") {
+            runRakeTask(mbSrcPath, "resource:list")
+        }
+
+        stage ("vagrant:destroy[$stackName::_all,--force]") {
+            runRakeTask(mbSrcPath, "vagrant:destroy[$stackName::_all,--force]")
+        }
+       
+    } catch(e) {
+        echo "Failed to run build: ERROR - $e"
+        throw e
+     } finally {
+     
+     }
+}
+
+void runMetaboxVagrantStackUpAll(mbSrcPath) 
+{
+    // meaning, second from the 'last'
+    stackName = env.JOB_NAME.split('/')[-2]
+
+    try {
+
+        stage ("resource:generate") {
+            runRakeTask(mbSrcPath, "resource:generate")
+        }
+
+        stage ("resource:list") {
+            runRakeTask(mbSrcPath, "resource:list")
+        }
+
+        stage ("vagrant:up[$stackName::_all]") {
+            runRakeTask(mbSrcPath, "vagrant:up[$stackName::_all]")
+        }
+       
+    } catch(e) {
+        echo "Failed to run build: ERROR - $e"
+        throw e
+     } finally {
+     
+     }
+}
+
+void runMetaboxVagrantStackHaltAll(mbSrcPath) 
+{
+    // meaning, second from the 'last'
+    stackName = env.JOB_NAME.split('/')[-2]
+
+    try {
+
+        stage ("resource:generate") {
+            runRakeTask(mbSrcPath, "resource:generate")
+        }
+
+        stage ("resource:list") {
+            runRakeTask(mbSrcPath, "resource:list")
+        }
+
+        stage ("vagrant:halt[$stackName::_all]") {
+            runRakeTask(mbSrcPath, "vagrant:halt[$stackName::_all]")
+        }
+       
+    } catch(e) {
+        echo "Failed to run build: ERROR - $e"
+        throw e
+     } finally {
+     
+     }
+}
+
+
+
+void runMetaboxVagrantStackVMUp(mbSrcPath) 
+{
+    // meaning, second from the 'last'
+    stackName    = env.JOB_NAME.split('/')[-2]
+    resourceName = env.JOB_NAME.split('/').last().split('up-').last()
+    
+    try {
+
+        stage ("resource:generate") {
+            runRakeTask(mbSrcPath, "resource:generate")
+        }
+
+        stage ("resource:list") {
+            runRakeTask(mbSrcPath, "resource:list")
+        }
+
+        stage ("vagrant:up[$stackName::$resourceName]") {
+            runRakeTask(mbSrcPath, "vagrant:up[$stackName::$resourceName]")
+        }
+       
+    } catch(e) {
+        echo "Failed to run build: ERROR - $e"
+        throw e
+     } finally {
+     
+     }
 }
 
 return this;

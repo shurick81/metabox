@@ -13,14 +13,7 @@ Metabox:
             Checksum:
               Enabled: true
               Type: "sha1"
-              Value: "9928405ae16a6f3d5b46c5772c7492e6dd2a26c4" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip officeserver.img"
+              Value: "9928405ae16a6f3d5b46c5772c7492e6dd2a26c4"
 
         sp2016_fp2:
           Type: "metabox::http::file"
@@ -31,10 +24,3 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "8999e93063fd45b9674ba9dcc884659fde90487d" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip sts2016-kb4011127-fullfile-x64-glb.exe"

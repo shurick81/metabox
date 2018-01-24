@@ -114,6 +114,7 @@ module Metabox
 
                 vm_names.each do | vm_name |
                     _internal_vagrant_up(environment_name: env, vm_name: vm_name, additional_params: all_additional_params)
+                    _print_vagrant_vm_info(environment_name: env, vm_name: vm_name)
                 end
             ensure
                 _post_vagrant_vm_provision
@@ -147,6 +148,7 @@ module Metabox
                     ].join(' && ')
         
                     track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+                    _print_vagrant_vm_info(environment_name: env, vm_name: vm)
                 end
             ensure
                 _post_vagrant_vm_provision
@@ -323,6 +325,21 @@ module Metabox
         end 
 
         private
+        
+        def _print_vagrant_vm_info(environment_name:, vm_name:)
+            full_name = environment_name + "-" + vm_name
+            
+            log.warn "Finished configuring host: #{full_name}"
+            log.warn "!!! use information below to ssh/rdp to this host !!!"
+
+            vagrant_config_service = get_service_by_name("metabox::vagrant::config::base")
+            vagrant_config_service.print_host_connection_info(
+                environment_name: environment_name,
+                vm_name: vm_name
+            )
+
+            log.warn "!!! --------------------------------------------- !!!"
+        end
 
         def _delete_vagrant_box(vagrant_box_path)
 

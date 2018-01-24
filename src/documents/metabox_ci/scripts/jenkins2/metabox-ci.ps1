@@ -5,7 +5,7 @@ function Log-MbMessage($message, $level) {
     $stamp = $(get-date -f "MM-dd-yyyy HH:mm:ss.fff")
     $logMessage = "METABOX-CI: $stamp : $level : $([environment]::UserDomainName)/$([environment]::UserName) : $message"
 
-    Write-Host $logMessage -Fore Green
+    Write-Host $logMessage -Fore Magenta
 }
 
 function Log-MbInfoMessage($message) {

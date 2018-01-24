@@ -160,7 +160,7 @@ module Metabox
         end
 
         def halt_vm(params)
-            log.info "Starting virtual machine..."
+            log.info "Halting virtual machine..."
 
             _execute_workflow(tasks: [
                 {
@@ -183,8 +183,32 @@ module Metabox
             ])
         end
 
+        def reload_vm(params)
+            log.info "Reloading virtual machine..."
+
+            _execute_workflow(tasks: [
+                {
+                    name: "resource:generate",
+                    params: [],
+                    description: "generating resources"
+                },
+
+                {
+                    name: "resource:list",
+                    params: [],
+                    description: "listing resources"
+                },
+
+                {
+                    name: "vagrant:reload",
+                    params: params,
+                    description: "starting virtual machine"
+                }
+            ])
+        end
+
         def destroy_vm(params)
-            log.info "Destroys virtual machine..."
+            log.info "Destroying virtual machine..."
 
             _execute_workflow(tasks: [
                 {

@@ -53,6 +53,9 @@ module Metabox
 
             documents = get_documents
 
+            log_message << "Found #{documents.count} metabox documents"
+            log_message << ""
+
             documents.each do | document |
                 log_message << " #{document} \n"
             end
@@ -349,7 +352,7 @@ module Metabox
 
         def _process_vagrant_resources
 
-            log.info "Processing vagrant handlers..."
+            log.debug "Processing vagrant handlers..."
 
             to_dirs = [
                 File.join(env_service.get_metabox_vagrant_dir, "scripts/vagrant"),

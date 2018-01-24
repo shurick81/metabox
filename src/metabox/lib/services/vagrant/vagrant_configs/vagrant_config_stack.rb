@@ -103,7 +103,7 @@ module Metabox
                             type = template.fetch('Type')
                             service = get_service_by_name(type)
 
-                            log.info "  - post_vagrant on service: #{service.name}"
+                            log.debug "  - post_vagrant on service: #{service.name}"
 
                             service.environment_config = environment_config;
 

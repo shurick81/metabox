@@ -143,6 +143,28 @@ module Metabox
             def post_vagrant(config:)
             end
 
+            def print_host_connection_info(environment_name:, vm_name:)
+                full_name = environment_name + "-" + vm_name
+
+                host_name  = get_host_name(environment_name: environment_name, vm_name: vm_name)
+                host_ip    = get_ip_address(environment_name: environment_name, vm_name: vm_name)
+                gateway_ip = get_environment_ip_range(name: environment_name) + ".1"
+                    
+                hostnames = [
+                    host_name,
+                    full_name
+                ]
+
+                log.info "  hostname:   #{host_name}"
+                log.info "  host_ip:    #{host_ip}"
+                log.info "  gateway_ip: #{gateway_ip}"
+
+                log.info "  hostnames:"
+                hostnames.each do | host_name |
+                    log.info "      - #{host_name}"
+                end
+            end
+
             def configure(config:, vm_config:)
                 _internal_global_setting(config: config, vm_config: vm_config)
                 _internal_configure(config: config, vm_config: vm_config)            
@@ -174,7 +196,7 @@ module Metabox
         
                 configure(config: current_config, vm_config: config)
 
-                log.info "Metabox completed vagrant VMs configuration. Vagrant takes it from here."
+                log.warn "Metabox completed vagrant VMs configuration. Vagrant takes it from here."
             end
 
             def get_host_name(environment_name:, vm_name:)

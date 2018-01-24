@@ -72,4 +72,12 @@ namespace "metabox" do
         )
     end
 
+    desc "Reloads virtual machine"
+    task :reload_vm do | task, task_args | 
+        $mb_api.execute_task(
+            task_name: task.name,
+            params: task_args.to_a
+        )
+    end
+
 end

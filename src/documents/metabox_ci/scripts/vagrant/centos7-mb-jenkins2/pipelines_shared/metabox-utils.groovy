@@ -93,7 +93,7 @@ void runMetaboxEnvironmentCheck(mbSrcPath) {
     runCmd 'printenv | grep METABOX_ | sort', 'SET'
 
     // packer
-    runCmd 'which packer'
+    runCmd 'which packer', 'where packer'
     runCmd 'packer --version'
 
     // vagrant  
@@ -117,8 +117,17 @@ void runMetaboxEnvironmentCheck(mbSrcPath) {
     runCmd 'echo $METABOX_WORKING_DIR'
     runCmd 'echo $METABOX_GIT_BRANCH'
     
+    // 7z
+    runCmd 'which 7z', 'where 7z'
+
+    // wget
+    runCmd 'which wget', 'where wget.exe'
+
     // empty metabox run
     runCmd "cd $METABOX_SRC_PATH && rake"
+
+    // empty metabox run with version
+    runCmd "cd $METABOX_SRC_PATH && rake metabox:version"
 }
 
 void runMetaboxMachinePreparation(mbSrcPath) {

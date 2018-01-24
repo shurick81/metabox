@@ -281,13 +281,16 @@ void runMetaboxVagrantStackHaltAll(mbSrcPath)
      }
 }
 
+void runMetaboxVagrantStackVMUp(mbSrcPath, String resourceName = null) { 
 
-
-void runMetaboxVagrantStackVMUp(mbSrcPath) 
-{
-    // meaning, second from the 'last'
-    stackName    = env.JOB_NAME.split('/')[-2]
-    resourceName = env.JOB_NAME.split('/').last().split('up-').last()
+    if(resourceName == null) {
+        stackName    = resourceName.split('::')[0]
+        resourceName = resourceName.split('::')[1]
+    } else {
+        // meaning, second from the 'last'
+        stackName    = env.JOB_NAME.split('/')[-2]
+        resourceName = env.JOB_NAME.split('/').last().split('up-').last()
+    }
     
     try {
 
@@ -301,6 +304,39 @@ void runMetaboxVagrantStackVMUp(mbSrcPath)
 
         stage ("vagrant:up[$stackName::$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:up[$stackName::$resourceName]")
+        }
+       
+    } catch(e) {
+        echo "Failed to run build: ERROR - $e"
+        throw e
+     } finally {
+     
+     }
+}
+
+void runMetaboxVagrantStackVMDestroy(mbSrcPath, String resourceName = null) { 
+    
+    if(resourceName == null) {
+        stackName    = resourceName.split('::')[0]
+        resourceName = resourceName.split('::')[1]
+    } else {
+        // meaning, second from the 'last'
+        stackName    = env.JOB_NAME.split('/')[-2]
+        resourceName = env.JOB_NAME.split('/').last().split('up-').last()
+    }
+    
+    try {
+
+        stage ("resource:generate") {
+            runRakeTask(mbSrcPath, "resource:generate")
+        }
+
+        stage ("resource:list") {
+            runRakeTask(mbSrcPath, "resource:list")
+        }
+
+        stage ("vagrant:up[$stackName::$resourceName]") {
+            runRakeTask(mbSrcPath, "vagrant:destroy[$stackName::$resourceName,--force]")
         }
        
     } catch(e) {

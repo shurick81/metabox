@@ -119,7 +119,7 @@ Metabox:
     win2016-mb-bin-sp16fp2:
       Type: "metabox::packer::build"
       Parameters:
-        box_name: "win2016-mb-bin-sp16-${ENV:METABOX_GIT_BRANCH}"
+        box_name: "win2016-mb-bin-sp16rtm-${ENV:METABOX_GIT_BRANCH}"
     
       Properties:
         PackerFileName: "win2016-mb-bin-sp16fp2.json"

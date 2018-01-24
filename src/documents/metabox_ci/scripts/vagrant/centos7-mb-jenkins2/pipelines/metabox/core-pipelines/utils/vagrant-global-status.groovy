@@ -11,6 +11,6 @@ node("metabox") {
     }
 
     stage("vagrant:global_status") {    
-        mbUtils.runMetaboxVagrantGlobalstatus(mbSrcPath);
+        mbUtils.runMetaboxVagrantGlobalStatus(mbSrcPath);
     }
 }

@@ -20,7 +20,7 @@ function wait_juntil_j2_online() {
     jenkins_user=$3
     jenkins_user_password=$4
 
-    echo "Calling J2 API..."
+    echo "Calling J2 API... it may fail, this is expected"
     result=$( java -jar $jenkins_cli_path -s $jenkins_server who-am-i --username $jenkins_user --password $jenkins_user_password )
 
     echo "Result: [$result]"

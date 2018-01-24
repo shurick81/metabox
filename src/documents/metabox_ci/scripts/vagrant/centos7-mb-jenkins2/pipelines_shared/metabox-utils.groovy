@@ -200,6 +200,16 @@ void runMetaboxVagrantGlobalStatus(mbSrcPath)
     runRakeTask(mbSrcPath, "vagrant:global_status")
 }
 
+void runMetaboxVagrantStatus(mbSrcPath)
+{
+    runRakeTask(mbSrcPath, "vagrant:status")
+}
+
+void runMetaboxVagrantBoxList(mbSrcPath)
+{
+    runRakeTask(mbSrcPath, "vagrant:box_list")
+}
+
 void runMetaboxVagrantStackDestroyAll(mbSrcPath) 
 {
     // meaning, second from the 'last'

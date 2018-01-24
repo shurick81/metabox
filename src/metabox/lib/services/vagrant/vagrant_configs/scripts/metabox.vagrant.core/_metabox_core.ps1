@@ -232,19 +232,28 @@ function Is-MbSecterVariableName($name) {
     return $name.ToUpper().Contains("_KEY") -or  $name.ToUpper().Contains("_PASSWORD")
 }
 
-
-
 function Get-MbEnvVariable($name, $message, $defaultValue) {
     
     $x = $name
-    $value = (get-item env:$x).Value    
+    $value = $null
+    
+    try {
+        $value = (get-item env:$x -ErrorAction SilentlyContinue).Value    
+    } catch {
+
+    }
     
     if([String]::IsNullOrEmpty($value) -eq $true) {
-        $errorMessage = "Cannot find env variable by name: $name - $message"
+        $errorMessage = "Cannot find env variable by name: $name - $message, will try default value if provided"
         Log-MbInfoMessage $errorMessage 
 
         if($defaultValue -ne $null) {
-            
+            Log-MbInfoMessage "Using default value"
+            Print-MbVariableValue $name $defaultValue 
+
+            return $defaultValue
+        } else {
+            "Cannot find env variable by name: $name - $message, and no default value wer provided"
         }
 
         throw $errorMessage 

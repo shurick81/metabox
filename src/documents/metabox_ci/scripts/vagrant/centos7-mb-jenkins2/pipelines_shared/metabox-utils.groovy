@@ -157,9 +157,11 @@ void runMetaboxFilesetDownload(mbSrcPath) {
     }
 }
 
-void runMetaboxPackerBuild(mbSrcPath, String packerFileName = null) {
+void runMetaboxPackerBuild(mbSrcPath, String resourceName = null) {
 
-    resourceName = env.JOB_NAME.split('/').last()
+    if(resourceName == null) {
+        resourceName = env.JOB_NAME.split('/').last()
+    }  
 
     try {
 

@@ -75,6 +75,38 @@ module Metabox
                 }
             end
 
+            def pre_vagrant_destroy(config:)
+                config.each { | environment_name, environment_value |
+                    log.info "pre_vagrant: stack: #{environment_name}"
+
+                    # vm name -> environment + resource
+                    resources = environment_value.fetch('Resources')
+                    
+                    resources.each { | resource_name, resource_value |
+                        vm_name = (environment_name + "-" + resource_name).downcase
+
+                        environment_config = {}
+                        environment_config[environment_name] = {
+                            "Resources" => {}    
+                        }
+
+                        environment_config[environment_name]["Resources"][resource_name] = resource_value
+
+                        vagrant_template_section = _get_vagrant_template(resource_value)
+
+                        vagrant_template_section.each do | template |
+                            type = template.fetch('Type')
+                            service = get_service_by_name(type)
+
+                            log.info "  - pre_vagrant on service: #{service.name}"
+
+                            service.environment_config = environment_config;
+                            service.pre_vagrant_destroy(config: template)
+                        end
+                    }
+                }
+            end
+
             def post_vagrant(config:)
 
                 log.verbose "incoming config"
@@ -109,6 +141,49 @@ module Metabox
 
                             begin
                                 service.post_vagrant(config: template)
+                            rescue => exception
+                                log.error "Error on post-vagrant service: #{service.name}"
+                                log.error "#{exception}"
+                            end
+                        end
+                    }
+                }
+            end
+
+            def post_vagrant_destroy(config:)
+
+                log.verbose "incoming config"
+                log.verbose config.to_yaml
+
+                config.each { | environment_name, environment_value |
+                    log.info "post_vagrant: stack: #{environment_name}"
+                    #log.warn environment_value.to_yaml
+
+                    # vm name -> environment + resource
+                    resources = environment_value.fetch('Resources')
+                    
+                    resources.each { | resource_name, resource_value |
+                        vm_name = (environment_name + "-" + resource_name).downcase
+
+                        environment_config = {}
+                        environment_config[environment_name] = {
+                            "Resources" => {}    
+                        }
+
+                        environment_config[environment_name]["Resources"][resource_name] = resource_value
+
+                        vagrant_template_section = _get_vagrant_template(resource_value)
+
+                        vagrant_template_section.each do | template |
+                            type = template.fetch('Type')
+                            service = get_service_by_name(type)
+
+                            log.debug "  - post_vagrant on service: #{service.name}"
+
+                            service.environment_config = environment_config;
+
+                            begin
+                                service.post_vagrant_destroy(config: template)
                             rescue => exception
                                 log.error "Error on post-vagrant service: #{service.name}"
                                 log.error "#{exception}"

@@ -21,6 +21,15 @@ module Metabox
                 _execute_scripts(config, 'pre_vagrant')
             end
 
+            def pre_vagrant_destroy(config:)
+
+                if !should_run?(config: config) 
+                    return 
+                end
+
+                _execute_scripts(config, 'pre_vagrant_destroy')
+            end
+
             def post_vagrant(config:)
 
                 if !should_run?(config: config) 
@@ -28,6 +37,15 @@ module Metabox
                 end
 
                 _execute_scripts(config, 'post_vagrant')
+            end
+
+            def post_vagrant_destroy(config:)
+
+                if !should_run?(config: config) 
+                    return 
+                end
+
+                _execute_scripts(config, 'post_vagrant_destroy')
             end
 
             def _execute_scripts(config, section)

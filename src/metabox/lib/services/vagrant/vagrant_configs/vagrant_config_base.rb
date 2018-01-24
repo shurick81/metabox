@@ -141,6 +141,15 @@ module Metabox
             end
 
             def post_vagrant(config:)
+
+            end
+
+            def pre_vagrant_destroy(config:)
+                
+            end
+
+            def post_vagrant_destroy(config:)
+
             end
 
             def print_host_connection_info(environment_name:, vm_name:)
@@ -178,6 +187,15 @@ module Metabox
                 service = get_service_by_name("vagrant::stack")
                 service.post_vagrant(config: targeted_config)
             end
+
+            def execute_post_vagrant_destroy_config(environment_name:, vm_name:)
+                targeted_config = _get_vm_config(environment_name: environment_name, vm_name: vm_name)
+                
+                log.verbose "execute_post_vagrant_destroy_config"
+
+                service = get_service_by_name("vagrant::stack")
+                service.post_vagrant_destroy(config: targeted_config)
+            end
             
             def execute_pre_vagrant_config(environment_name:, vm_name:)
                 targeted_config = _get_vm_config(environment_name: environment_name, vm_name: vm_name)
@@ -186,6 +204,15 @@ module Metabox
 
                 service = get_service_by_name("vagrant::stack")
                 service.pre_vagrant(config: targeted_config)
+            end
+
+            def execute_pre_vagrant_destroy_config(environment_name:, vm_name:)
+                targeted_config = _get_vm_config(environment_name: environment_name, vm_name: vm_name)
+                
+                log.warn "execute_pre_vagrant_destroy_config"
+
+                service = get_service_by_name("vagrant::stack")
+                service.pre_vagrant_destroy(config: targeted_config)
             end
 
             def configure_vagrant_config(config:)

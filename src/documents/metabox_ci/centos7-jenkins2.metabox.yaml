@@ -143,13 +143,25 @@ Metabox:
                     inline: 
                       - "echo 'METABOX-CI: shutting down swarm client'" 
                       - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""
+                 
                   vagrant:
                     inline: 
                       - "echo 'doing nothing'" 
+                  
                   post_vagrant: 
                     inline: 
                       - "echo 'METABOX-CI: running new Swarm client...'" 
                       # 1) always use pwsh, it makes it work consistently for both win and non-win environments 
                       #    metabox fixes it up as 'powershell' for win platform, and leaves 'pwsh' for non-windows
                       # 2) always use double quotes " in cmds - windows might not work well somehow with single-quote
-                      - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-InitSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""    
+                      - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-InitSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""
+
+                  post_vagrant_destroy: 
+                    inline: 
+                      - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""
+
+                  pre_vagrant_destroy: 
+                    inline: 
+                      - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""
+
+                      

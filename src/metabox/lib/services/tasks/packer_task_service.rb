@@ -14,12 +14,12 @@ module Metabox
         end
 
         def clean(params)
-            log.info "Running task [#{__method__}] with arguments: #{params}"
+            #log.info "Running task [#{__method__}] with arguments: #{params}"
 
         end
 
         def build(params)
-            log.info "Running task [#{__method__}] with arguments: #{params}"
+            #log.info "Running task [#{__method__}] with arguments: #{params}"
 
             first_param =  params.first
 

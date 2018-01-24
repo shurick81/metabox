@@ -17,7 +17,7 @@ module Metabox
         end
 
         def add(params)
-            log.info "Running task [#{__method__}] with arguments: #{params}"
+            #log.info "Running task [#{__method__}] with arguments: #{params}"
 
             first_param =  params.first
 
@@ -64,7 +64,7 @@ module Metabox
         end        
 
         def add_from_file(params) 
-            log.info "Running task [#{__method__}] with arguments: #{params}"
+            #log.info "Running task [#{__method__}] with arguments: #{params}"
 
             if params.count < 2
                 error_message = "This task requires at least 2 params: box_file_path, box_name and optional --force"
@@ -256,8 +256,15 @@ module Metabox
                         "vagrant destroy #{native_vm_name} #{additional_params}"
                     ].join(' && ')
 
-                working_dir = env_service.get_metabox_vagrant_dir
-                track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+                    
+                begin
+                    #_execute_pre_vagrant_destroy_handlers(environment_name: environment_name, vm_name: vm_name)
+
+                    working_dir = env_service.get_metabox_vagrant_dir
+                    track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+                ensure
+                    #_execute_post_vagrant_destroy_handlers(environment_name: environment_name, vm_name: vm_name)
+                end
             
                 return
             end
@@ -283,16 +290,25 @@ module Metabox
                     "vagrant destroy #{full_vm_name} #{additional_params}"
                 ].join(' && ')
 
-                # vagrant destroy exits 1 when no running vm found #9137
-                # https://github.com/hashicorp/vagrant/issues/9137
-                # -> valid_exit_codes: [0, 1] 
-                track_execution("Executing cmd") { 
-                    os_service.run_cmd(
-                        cmd: cmd, 
-                        pwd: working_dir, 
-                        is_dry_run: is_dry_run?, 
-                        valid_exit_codes: [0, 1] ) 
-                }
+                begin
+                    _execute_pre_vagrant_destroy_handlers(environment_name: env, vm_name: vm_name)
+
+                    working_dir = env_service.get_metabox_vagrant_dir
+
+                    # vagrant destroy exits 1 when no running vm found #9137
+                    # https://github.com/hashicorp/vagrant/issues/9137
+                    # -> valid_exit_codes: [0, 1] 
+                    track_execution("Executing cmd") { 
+                        os_service.run_cmd(
+                            cmd: cmd, 
+                            pwd: working_dir, 
+                            is_dry_run: is_dry_run?, 
+                            valid_exit_codes: [0, 1] ) 
+                    }
+                ensure
+                    _execute_post_vagrant_destroy_handlers(environment_name: env, vm_name: vm_name)
+                end
+            
             end 
         end 
 
@@ -476,11 +492,25 @@ module Metabox
             vagrant_config_service.execute_pre_vagrant_config(environment_name: environment_name, vm_name: vm_name)
         end
 
+        def _execute_pre_vagrant_destroy_handlers(environment_name:, vm_name:)
+            log.info "Executing pre-vagrant-destroy handlers..."
+
+            vagrant_config_service = get_service_by_name("metabox::vagrant::config::base")
+            vagrant_config_service.execute_pre_vagrant_destroy_config(environment_name: environment_name, vm_name: vm_name)
+        end
+
         def _execute_post_vagrant_handlers(environment_name:, vm_name:)
             log.info "Executing post-vagrant handlers..."
 
             vagrant_config_service = get_service_by_name("metabox::vagrant::config::base")
             vagrant_config_service.execute_post_vagrant_config(environment_name: environment_name, vm_name: vm_name)
+        end
+
+        def _execute_post_vagrant_destroy_handlers(environment_name:, vm_name:)
+            log.info "Executing post-vagrant-destroy handlers..."
+
+            vagrant_config_service = get_service_by_name("metabox::vagrant::config::base")
+            vagrant_config_service.execute_post_vagrant_destroy_config(environment_name: environment_name, vm_name: vm_name)
         end
 
         def _get_metabox_params_hash(value)

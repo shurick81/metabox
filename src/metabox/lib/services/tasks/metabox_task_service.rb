@@ -101,7 +101,135 @@ module Metabox
             _validate_vagrant(params)
         end
 
+        def version(params)
+            _print_version_raw
+        end
+
+        def build_image(params)
+            log.info "Building packer image and adding it to Vagrant..."
+
+            _execute_workflow(tasks: [
+                {
+                    name: "resource:generate",
+                    params: [],
+                    description: "generating resources"
+                },
+
+                {
+                    name: "resource:list",
+                    params: [],
+                    description: "listing resources"
+                },
+
+                {
+                    name: "packer:build",
+                    params: params,
+                    description: "building Packer image"
+                },
+
+                {
+                    name: "vagrant:add",
+                    params: params,
+                    description: "adding image to Vagrant"
+                }
+            ])
+        end
+
+        def start_vm(params)
+            log.info "Starting virtual machine..."
+
+            _execute_workflow(tasks: [
+                {
+                    name: "resource:generate",
+                    params: [],
+                    description: "generating resources"
+                },
+
+                {
+                    name: "resource:list",
+                    params: [],
+                    description: "listing resources"
+                },
+
+                {
+                    name: "vagrant:up",
+                    params: params,
+                    description: "starting virtual machine"
+                }
+            ])
+        end
+
+        def halt_vm(params)
+            log.info "Starting virtual machine..."
+
+            _execute_workflow(tasks: [
+                {
+                    name: "resource:generate",
+                    params: [],
+                    description: "generating resources"
+                },
+
+                {
+                    name: "resource:list",
+                    params: [],
+                    description: "listing resources"
+                },
+
+                {
+                    name: "vagrant:halt",
+                    params: params,
+                    description: "starting virtual machine"
+                }
+            ])
+        end
+
+        def destroy_vm(params)
+            log.info "Destroys virtual machine..."
+
+            _execute_workflow(tasks: [
+                {
+                    name: "resource:generate",
+                    params: [],
+                    description: "generating resources"
+                },
+
+                {
+                    name: "resource:list",
+                    params: [],
+                    description: "listing resources"
+                },
+
+                {
+                    name: "vagrant:destroy",
+                    params: params,
+                    description: "starting virtual machine"
+                }
+            ])
+        end
+
         private
+
+        def _execute_workflow(tasks:) 
+            all_tasks_count = tasks.count
+            task_flow = " \n - " + (tasks.collect { |t| t[:name] + "#{t[:params]}" }).join("\n - ")
+
+            log.info "  - executing [#{all_tasks_count}] tasks: #{task_flow}"
+
+            tasks.each do | task |
+                current_task_index = (tasks.index(task) + 1)
+            
+                log.info "  - [#{current_task_index}/#{all_tasks_count}] running task #{task[:description]}..."
+               
+                task_service.execute_task(
+                    task_name: task[:name], 
+                    params: task[:params]
+                )
+            end
+        end
+
+        def _print_version_raw
+            puts Metabox::VERSION
+        end
 
         def _validate_packer(params)
 

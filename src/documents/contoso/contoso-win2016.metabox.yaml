@@ -5,7 +5,7 @@ Metabox:
     box_app:    "win2016-mb-app-${ENV:METABOX_GIT_BRANCH}"
     box_sp:     "win2016-mb-bin-sp16-${ENV:METABOX_GIT_BRANCH}"
 
-    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-soe-stacks"
+    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/${ENV:METABOX_GIT_BRANCH}/contoso-win2016"
   Resources:
 
     contoso-win2016:

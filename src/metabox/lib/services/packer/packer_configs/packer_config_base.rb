@@ -15,6 +15,8 @@ module Metabox
             @default_type = 'metabox::packer::config::raw'
             services = get_services(Metabox::PackerConfigBase)
             
+            _validate_required_tools(config: config)
+
             _inject_metabox_core_scripts(config: config)
             _internal_configure(services: services, config: config, packer_config: packer_config)            
         end
@@ -29,6 +31,22 @@ module Metabox
         end
 
         private
+
+        def _validate_required_tools(config:)
+            
+            tools = @current_resource.fetch('RequireTools', [])
+
+            if tools.count > 0 
+                log.info "Validating required tools..."
+                tool_validation_service.require_tools(tool_names: tools)
+            end
+        
+        end
+
+        def _validate_tool(tool_name:)
+            log.info "  - validating tool: #{tool_name}"
+   
+        end
 
         def _inject_metabox_core_scripts(config:)
             log.debug "Injecting core metabox scripts..."

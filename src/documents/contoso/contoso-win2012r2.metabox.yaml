@@ -8,7 +8,7 @@ Metabox:
     box_sp16:    "win2016-mb-bin-sp16-${ENV:METABOX_GIT_BRANCH}"
     box_sp16fp2: "win2016-mb-bin-sp16fp2-${ENV:METABOX_GIT_BRANCH}"
 
-    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-contoso-${ENV:METABOX_GIT_BRANCH}"
+    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/${ENV:METABOX_GIT_BRANCH}/contoso-win2012-r2"
   Resources:
     
     contoso-win2012-r2:

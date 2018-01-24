@@ -429,6 +429,9 @@ module Metabox
                     else
                         raise "Unsupported OS: #{os}"
                     end
+
+                    # validating required tools
+                    _validate_required_tools(config: target_vm)
                 end
 
                 # https://github.com/devopsgroup-io/vagrant-hostmanager
@@ -437,6 +440,17 @@ module Metabox
                 vm_config.hostmanager.manage_guest = false
             end
             
+            def _validate_required_tools(config:)
+            
+                tools = config.fetch('RequireTools', [])
+    
+                if tools.count > 0 
+                    log.info "Validating required tools..."
+                    tool_validation_service.require_tools(tool_names: tools)
+                end
+            
+            end
+
             def _get_vagrant_argv
                 args = ARGV
 

@@ -8,7 +8,7 @@ Metabox:
     jenkins_web_agent_port: "${ENV:METABOX_JENKINS_WEB_AGENT_PORT}"
     jenkins_pipelines_path: "/vagrant/scripts/vagrant/centos7-mb-jenkins2/pipelines"
 
-    custom_machine_folder : "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-ci-stack"
+    custom_machine_folder : "${ENV:METABOX_WORKING_DIR}/vagrant_vms/${ENV:METABOX_GIT_BRANCH}/metabox_ci"
     metabox_ci_box_name   : "${ENV:METABOX_CI_BOX_NAME}" 
   Resources:
     
@@ -57,6 +57,9 @@ Metabox:
         soe_box_name: "Fn::GetParameter metabox_ci_box_name"
       Resources:
         "jenkins2-${ENV:METABOX_JENKINS_INSTANCE_NAME}":
+          RequireTools:
+            - "java"
+            - "pwsh"
           OS: 'linux'
           VagrantTemplate:
             - Type: "vagrant::config::vm"
@@ -138,12 +141,15 @@ Metabox:
                 hooks:
                   pre_vagrant: 
                     inline: 
-                      - "echo 'Metabox: shutting down swarm client'" 
-                      - "nohup sh ./scripts/jenkins2/shutdown_slave.sh"
+                      - "echo 'METABOX-CI: shutting down swarm client'" 
+                      - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""
                   vagrant:
                     inline: 
                       - "echo 'doing nothing'" 
                   post_vagrant: 
                     inline: 
-                      - "echo 'Metabox: running new Swarm client...'" 
-                      - "nohup sh ./scripts/jenkins2/init_slave.sh metabox-slave-${ENV:METABOX_GIT_BRANCH} ${ENV:METABOX_JENKINS_UI_PORT} &"        
+                      - "echo 'METABOX-CI: running new Swarm client...'" 
+                      # 1) always use pwsh, it makes it work consistently for both win and non-win environments 
+                      #    metabox fixes it up as 'powershell' for win platform, and leaves 'pwsh' for non-windows
+                      # 2) always use double quotes " in cmds - windows might not work well somehow with single-quote
+                      - "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-InitSlave ${ENV:METABOX_JENKINS_UI_PORT} metabox-slave-${ENV:METABOX_GIT_BRANCH}\""    

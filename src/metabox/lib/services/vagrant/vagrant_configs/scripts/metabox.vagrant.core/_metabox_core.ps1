@@ -50,7 +50,9 @@ function Include-MbSharedHandlerScript {
 
 function Log-MbMessage($message, $level) {
     $stamp = $(get-date -f "MM-dd-yyyy HH:mm:ss.fff")
-    $logMessage = "METABOX: $stamp : $level : $($env:USERDOMAIN)/$($env:USERNAME) : $message"
+    # use [environment]::UserDomainName / [environment]::UserName
+    # $env:USERDOMAIN won't work on non-windows platforms
+    $logMessage = "METABOX: $stamp : $level : $([environment]::UserDomainName)/$([environment]::UserName) : $message"
 
     Write-Host $logMessage
 }

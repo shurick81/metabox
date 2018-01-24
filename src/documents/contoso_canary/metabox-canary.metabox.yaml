@@ -11,7 +11,7 @@ Metabox:
     # standart hashicorp's precise64 for testing purposes
     box_precise64: "hashicorp/precise64"
 
-    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/metabox-soe-carary-stacks"
+    custom_machine_folder: "${ENV:METABOX_WORKING_DIR}/vagrant_vms/${ENV:METABOX_GIT_BRANCH}/metabox_canary"
   Resources:
     soe-canary:
       Type: "vagrant::stack"

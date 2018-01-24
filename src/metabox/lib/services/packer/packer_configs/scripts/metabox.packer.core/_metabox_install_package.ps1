@@ -11,7 +11,7 @@ $packageName        = Get-MbEnvVariable "METABOX_APP_PACKAGE_NAME"
 $packageFilePath    = Get-MbEnvVariable "METABOX_APP_PACKAGE_FILE_PATH"
 $silentArgs         = Get-MbEnvVariable "METABOX_APP_PACKAGE_SILENT_ARGS"
 $exitCodes          = Get-MbEnvVariable "METABOX_APP_PACKAGE_EXIT_CODES"
-$fileType           = Get-MbEnvVariable "METABOX_APP_PACKAGE_FILE_TYPE" "message" "msu"
+$fileType           = Get-MbEnvVariable "METABOX_APP_PACKAGE_FILE_TYPE" "default value" "msu"
 
 $exitCodes = $exitCodes.split(',')
 

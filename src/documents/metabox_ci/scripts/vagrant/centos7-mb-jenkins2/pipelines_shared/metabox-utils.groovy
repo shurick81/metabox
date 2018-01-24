@@ -173,15 +173,15 @@ void runMetaboxPackerBuild(mbSrcPath, String resourceName = null) {
             runRakeTask(mbSrcPath, "resource:list")
         }
 
-        stage ("packer:build") {
+        stage ("packer:build[$resourceName]") {
             runRakeTask(mbSrcPath, "packer:build[${resourceName},--force]")
         }
 
-        stage ("vagrant:add") {
+        stage ("vagrant:add[$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:add[${resourceName},--force]")
         }
 
-        stage ("vagrant:list") {
+        stage ("vagrant:box_list") {
             runRakeTask(mbSrcPath, "vagrant:box_list")
         }
 

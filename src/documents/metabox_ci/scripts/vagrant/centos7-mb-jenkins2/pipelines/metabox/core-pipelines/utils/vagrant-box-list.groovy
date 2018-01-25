@@ -10,7 +10,7 @@ node("metabox") {
         mbUtils.runMetaboxEnvironmentCheck(mbSrcPath);
     }
 
-    stage("vagrant:global_status") {    
+    stage("vagrant:box_list") {    
         mbUtils.runMetaboxVagrantBoxList(mbSrcPath);
     }
 }

@@ -7,9 +7,7 @@ node("metabox") {
     def mbUtils             = load "$mbVagrantBuildPath/scripts/vagrant/centos7-mb-jenkins2/pipelines_shared/metabox-utils.groovy"
     // metabox system init - end
     
-    stage("env sanity") {        
-        mbUtils.runMetaboxEnvironmentCheck(mbSrcPath);
-    }
+    mbUtils.runMetaboxPrepareStages(mbSrcPath);
     
     mbUtils.runMetaboxPackerBuild(mbSrcPath, "win2012-mb-soe");
     mbUtils.runMetaboxPackerBuild(mbSrcPath, "win2012-mb-app");

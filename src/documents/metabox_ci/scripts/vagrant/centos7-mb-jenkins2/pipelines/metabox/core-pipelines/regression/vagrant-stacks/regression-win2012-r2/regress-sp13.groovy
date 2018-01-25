@@ -13,17 +13,19 @@ node("metabox") {
     try {
         mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2012-r2::dc");
        
-        // // stand up SQL14
-        // mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath, "regression-win2012-r2::sql14");
+        // stand up SQL12
+        mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2012-r2::sql12");
 
-        // // stand up SP2013 SP1
-        // mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2012-r2::sp13sp1");
-        // mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2012-r2::sp13sp1");   
+        // stand up SP2013 SP1
+        mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2012-r2::sp13sp1");
+        mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2012-r2::sp13sp1");   
 
         // clean up all
         // mbUtils.runMetaboxVagrantStackDestroyAll(mbSrcPath) 
 
     } finally {
-        // mbUtils.runMetaboxVagrantStackDestroyAll(mbSrcPath) 
+        mbUtils.runMetaboxVagrantStackVMHalt(mbSrcPath,    "regression-win2012-r2::sql12");
+
+        mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2012-r2::sp13sp1");
     } 
 }

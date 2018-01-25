@@ -345,7 +345,7 @@ void runMetaboxVagrantStackVMHalt(mbSrcPath, String resourceName = null) {
             runRakeTask(mbSrcPath, "resource:list")
         }
 
-        stage ("vagrant:up[$stackName::$resourceName]") {
+        stage ("vagrant:halt[$stackName::$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:halt[$stackName::$resourceName]")
         }
        
@@ -378,7 +378,7 @@ void runMetaboxVagrantStackVMDestroy(mbSrcPath, String resourceName = null) {
             runRakeTask(mbSrcPath, "resource:list")
         }
 
-        stage ("vagrant:up[$stackName::$resourceName]") {
+        stage ("vagrant:destroy[$stackName::$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:destroy[$stackName::$resourceName,--force]")
         }
        

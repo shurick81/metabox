@@ -13,21 +13,24 @@ node("metabox") {
     try {
         mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2016::dc");
        
-        // // stand up SQL14
-        // mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath, "regression-win2016::sql14");
+        // stand up SQL14
+        mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2016::sql14");
 
-        // // stand up SP2016 RTM
-        // mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2016::sp16rtm");
-        // mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2016::sp16rtm");
+        // stand up SP2016 RTM
+        mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2016::sp16rtm");
+        mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2016::sp16rtm");
 
-        // // stand up SP2016 FP2
-        // mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2016::sp16fp2");
-        // mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2016::sp16fp2");   
+        // stand up SP2016 FP2
+        mbUtils.runMetaboxVagrantStackVMUp(mbSrcPath,      "regression-win2016::sp16fp2");
+        mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2016::sp16fp2");   
 
         // clean up all
         // mbUtils.runMetaboxVagrantStackDestroyAll(mbSrcPath) 
-
     } finally {
-        // mbUtils.runMetaboxVagrantStackDestroyAll(mbSrcPath) 
+        mbUtils.runMetaboxVagrantStackVMHalt(mbSrcPath,    "regression-win2016::sql14");
+
+        mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2016::sp16rtm");
+        mbUtils.runMetaboxVagrantStackVMDestroy(mbSrcPath, "regression-win2016::sp16fp2");
+
     } 
 }

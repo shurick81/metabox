@@ -52,4 +52,8 @@ if ($name) {
   throw $errorMessage
 }
 
+Log-MbInfoMessage "Running ipconfig..."
+& ipconfig 
+Validate-MbExitCode $LASTEXITCODE "Cannot run ipconfig"
+
 exit 0

@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
 if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-Log-MbInfoMessage "Installing package..."
+Log-MbInfoMessage "Installing MSI/EXE package..."
 Trace-MbEnv
 
 $packageName        = Get-MbEnvVariable "METABOX_APP_PACKAGE_NAME"

@@ -1,8 +1,15 @@
+# fail on errors and include metabox helpers
+$ErrorActionPreference = "Stop"
+
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
+
+Log-MbInfoMessage "Optimizing image size..."
+Trace-MbEnv
+
 # http://www.hurryupandwait.io/blog/in-search-of-a-light-weight-windows-vagrant-box
 
-Write-Host "Optimizing image size..."
-
-Write-Host "Shrinking PageFile..."
+Log-MbInfoMessage "Shrinking PageFile..."
 
 try {
     $System = GWMI Win32_ComputerSystem -EnableAllPrivileges
@@ -14,31 +21,31 @@ try {
     $CurrentPageFile.MaximumSize = 512
     $CurrentPageFile.Put()
 } catch {
-    Write-Host "Error while shrinking PageFile: $_"
+    Log-MbInfoMessage "Error while shrinking PageFile: $_"
 }
 
-Write-Host "Cleaning up WinSXS debris..."
+Log-MbInfoMessage "Cleaning up WinSXS debris..."
 try {
     Dism.exe /online /Cleanup-Image /StartComponentCleanup 
 } catch {
-    Write-Host "Error while cleaning up WinSXS debris: $_"
+    Log-MbInfoMessage "Error while cleaning up WinSXS debris: $_"
 }
 
-Write-Host "Additional disk cleanup..."
+Log-MbInfoMessage "Additional disk cleanup..."
 try {
     C:\Windows\System32\cleanmgr.exe /d c:
 } catch {
-    Write-Host "Error while cleaning up disk: $_"
+    Log-MbInfoMessage "Error while cleaning up disk: $_"
 }
 
-Write-Host "Optimizing volume..."
+Log-MbInfoMessage "Optimizing volume..."
 try {
     Optimize-Volume -DriveLetter C
 } catch {
-    Write-Host "Error while optimizing volume: $_"
+    Log-MbInfoMessage "Error while optimizing volume: $_"
 }
 
-Write-Host "Killing hidden data..."
+Log-MbInfoMessage "Killing hidden data..."
 try {
     Invoke-WebRequest http://download.sysinternals.com/files/SDelete.zip -OutFile sdelete.zip
     
@@ -47,5 +54,7 @@ try {
     
     ./sdelete.exe -z c: -accepteula
 } catch {
-    Write-Host "Error while killing hidden data: $_"
+    Log-MbInfoMessage "Error while killing hidden data: $_"
 }
+
+exit 0

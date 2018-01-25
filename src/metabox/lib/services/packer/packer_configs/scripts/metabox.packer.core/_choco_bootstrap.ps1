@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
 if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-Log-MbInfoMessage "Installing additional development software..."
+Log-MbInfoMessage "Installing 7z and PowerShell software..."
 Trace-MbEnv
 
 Log-MbInfoMessage "Set-ExecutionPolicy Bypass -Force"

@@ -3,7 +3,6 @@ Metabox:
   Parameters:
  
   Resources:
-  
     win2012-r2-mb-bin-sp13:
       Type: "metabox::packer::build"
       Parameters:

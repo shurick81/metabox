@@ -43,10 +43,18 @@ module Metabox
                 "packer build #{additional_params} #{packer_resource_file}"
             ].join(' && ')
 
-            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
-            
-        end
+            begin
+                # always switching to a custom machine folder for packer
+                # trying to avoid clutterning default system drive
+                machinefolder = env_service.get_metabox_packer_vm_folder
+                virtualbox_service.set_machinefolder(machinefolder)
+                
+                track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+            ensure
+                virtualbox_service.set_default_machinefolder
+            end
 
+        end
     end
 
 end

@@ -1,20 +1,27 @@
-Write-Host "Running SharePoint 2013 RTM fixes..."
+# fail on errors and include metabox helpers
+$ErrorActionPreference = "Stop"
 
-Write-Host "ServerManager fix"
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
+
+Log-MbInfoMessage "Installing fixes required SharePoint 2013 RTM..."
+Trace-MbEnv
+
+Log-MbInfoMessage "ServerManager fix"
 # https://social.technet.microsoft.com/Forums/office/en-US/37cc20db-6cc7-45e0-928c-9a1ddbdab2ae/the-tool-was-unable-to-install-application-server-role-web-server-iis-role?forum=sharepointadmin
 
 if ( !(Test-Path "C:\windows\System32\ServerManagerCMD.exe") ) {
     Copy-Item "C:\windows\System32\ServerManager.exe" "C:\windows\System32\ServerManagerCMD.exe" -Force -ErrorAction SilentlyContinue
 }
 
-Write-Host "Checking if prerequisiteinstaller is still running..."
+Log-MbInfoMessage "Checking if prerequisiteinstaller is still running..."
 
 while( ( get-process | Where-Object { $_.ProcessName.ToLower() -eq "prerequisiteinstaller" } ) -ne $null) {
-    Write-Host "prerequisiteinstaller is still running... sleeping 5 sec.."
+    Log-MbInfoMessage "prerequisiteinstaller is still running... sleeping 5 sec.."
     Start-Sleep -Seconds 5
 }
 
-Write-Host "Running prerequisiteinstaller..."
+Log-MbInfoMessage "Running prerequisiteinstaller..."
 
 $SharePoint2013SP1Path = "C:\_metabox_resources\sp2013_prerequisites"
 $process = "C:\_metabox_resources\sp2013server_rtm\prerequisiteinstaller.exe"
@@ -38,7 +45,7 @@ $p.StartInfo = $pinfo
 $p.Start() | Out-Null
 $p.WaitForExit()
 
-Write-Host "Exit code: $($p.ExitCode)"
+Log-MbInfoMessage "Exit code: $($p.ExitCode)"
 
 if($p.ExitCode -eq 3010) {
     exit 0

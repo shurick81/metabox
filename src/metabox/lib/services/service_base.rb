@@ -137,6 +137,10 @@ module Metabox
             get_service(Metabox::YamlConfigService)
         end
 
+        def virtualbox_service
+            get_service_by_name("metabox::core::virtualbox_service")
+        end
+
         def task_service
             get_service_by_name("metabox::core::task_execution_service")
         end

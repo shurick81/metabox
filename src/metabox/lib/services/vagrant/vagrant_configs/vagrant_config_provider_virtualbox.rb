@@ -23,25 +23,15 @@ module Metabox
 
             def _set_custom_vm_default_folder(config:)
                 props = config.fetch('Properties')
-                machinefolder = props.fetch('machinefolder', nil)
-
-                if !machinefolder.nil? && !machinefolder.empty?
-
-                    machinefolder = File.expand_path machinefolder
-                    FileUtils.mkdir_p machinefolder
-
-                    if !File.exists? machinefolder
-                        raise "Cannot VirtualBox default machinefolder - folder does not exist: #{machinefolder}"
-                    end
-
-                    log.info "      - updating VirtualBox default machinefolder to '#{machinefolder}'"
-                    run_cmd(cmd: "VBoxManage setproperty machinefolder #{machinefolder}")
-                end
+                
+                # always switching to a custom machine folder
+                # trying to avoid clutterning default system drive
+                machinefolder = props.fetch('machinefolder', env_service.get_metabox_vagrant_vm_folder)
+                virtualbox_service.set_machinefolder(machinefolder)
             end
 
             def _set_vm_default_folder(config:)
-                log.info "      - reverting VirtualBox default machinefolder to 'default'"
-                run_cmd(cmd: "VBoxManage setproperty machinefolder default")
+                virtualbox_service.set_default_machinefolder
             end
 
             def configure_host(config:, vm_config:)

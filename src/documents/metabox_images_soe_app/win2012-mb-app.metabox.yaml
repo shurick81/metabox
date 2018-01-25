@@ -23,11 +23,6 @@ Metabox:
                   output_directory: "{{ user `metabox_working_dir` }}/packer_output/win2012-mb-app-{{ user `metabox_git_branch` }}"
                   http_directory: "{{ user `http_directory` }}"
           provisioners:
-            # metabox PS helpers
-            # - type: "file"
-            #   source: "./scripts/packer/metabox.packer.core/_metabox_core.ps1"
-            #   destination: "c:/Windows/Temp/_metabox_core.ps1"
-
             # vagrant_win12_sysprep support files
             - type: "file"
               source: "./scripts/packer/metabox.packer.core/answer_files/2012/Autounattend_sysprep.xml"

@@ -212,6 +212,22 @@ module Metabox
             result
         end
 
+        def get_metabox_vagrant_vm_folder
+            result = File.join get_metabox_working_dir, "vagrant_vms/default"
+
+            _ensure_folder result
+
+            result
+        end
+
+        def get_metabox_packer_vm_folder
+            result = File.join get_metabox_working_dir, "packer_vms/default"
+
+            _ensure_folder result
+
+            result
+        end
+
         def metabox_features_revisions?
             result = __env.fetch('METABOX_FEATURES_REVISIONS', nil)
             

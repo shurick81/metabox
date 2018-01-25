@@ -422,7 +422,7 @@ Metabox:
                 sp_version: "sp2013"
                 sp_role   : ["wfe"]
 
-                sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql12"
+                sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql14"
                 sp_farm_sql_db_prefix: "Fn::GetResourceName"
                 
                 sp_farm_passphrase: "Fn::GetParameter dc_domain_admin_password"
@@ -469,7 +469,7 @@ Metabox:
                 sp_version: "sp2013"
                 sp_role   : ["wfe"]
 
-                sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql12"
+                sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql14"
                 sp_farm_sql_db_prefix: "Fn::GetResourceName"
                 
                 sp_farm_passphrase: "Fn::GetParameter dc_domain_admin_password"

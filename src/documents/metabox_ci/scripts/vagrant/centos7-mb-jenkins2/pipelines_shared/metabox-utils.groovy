@@ -181,8 +181,8 @@ void runMetaboxPackerBuild(mbSrcPath, String resourceName = null) {
 
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
 
         stage ("packer:build[$resourceName]") {
             runRakeTask(mbSrcPath, "packer:build[${resourceName},--force]")
@@ -226,8 +226,8 @@ void runMetaboxVagrantStackDestroyAll(mbSrcPath)
 
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
 
         stage ("vagrant:destroy[$stackName::_all,--force]") {
             runRakeTask(mbSrcPath, "vagrant:destroy[$stackName::_all,--force]")
@@ -248,8 +248,8 @@ void runMetaboxVagrantStackUpAll(mbSrcPath)
 
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
 
         stage ("vagrant:up[$stackName::_all]") {
             runRakeTask(mbSrcPath, "vagrant:up[$stackName::_all]")
@@ -270,8 +270,8 @@ void runMetaboxVagrantStackHaltAll(mbSrcPath)
 
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
 
         stage ("vagrant:halt[$stackName::_all]") {
             runRakeTask(mbSrcPath, "vagrant:halt[$stackName::_all]")
@@ -298,8 +298,8 @@ void runMetaboxVagrantStackVMUp(mbSrcPath, String resourceName = null) {
     
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
         
         stage ("vagrant:up[$stackName::$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:up[$stackName::$resourceName]")
@@ -326,8 +326,8 @@ void runMetaboxVagrantStackVMHalt(mbSrcPath, String resourceName = null) {
     
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
 
         stage ("vagrant:halt[$stackName::$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:halt[$stackName::$resourceName]")
@@ -354,8 +354,8 @@ void runMetaboxVagrantStackVMDestroy(mbSrcPath, String resourceName = null) {
     
     try {
 
-        runRakeTask(mbSrcPath, "resource:generate")
-        runRakeTask(mbSrcPath, "resource:list")
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
 
         stage ("vagrant:destroy[$stackName::$resourceName]") {
             runRakeTask(mbSrcPath, "vagrant:destroy[$stackName::$resourceName,--force]")
@@ -367,6 +367,17 @@ void runMetaboxVagrantStackVMDestroy(mbSrcPath, String resourceName = null) {
      } finally {
      
      }
+}
+
+void runMetaboxPrepareStages(mbSrcPath) {
+    stage("env sanity") {        
+        runMetaboxEnvironmentCheck(mbSrcPath);
+    }
+
+    stage("generate resources") {
+        runRakeTask(mbSrcPath, "resource:generate")
+        runRakeTask(mbSrcPath, "resource:list")
+    }
 }
 
 return this;

@@ -110,16 +110,6 @@ Metabox:
             # finilizing the box
             # additional restart to ensure no pending reboots are here
             - type: "windows-restart"
-
-            # installing updates, all, this is really heavy process
-            - type: "powershell"
-              inline: 
-                - "Write-Host 'Installing ALL updates...'"
-                - "Get-WUInstall -AcceptAll -IgnoreReboot"
-            
-            # additional reboot to get all updates applied
-            - type: "windows-restart"
-              restart_timeout: 45m
            
           post-processors: 
             - Type:  "packer::post-processors::vagrant"

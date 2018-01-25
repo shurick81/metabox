@@ -100,7 +100,7 @@ Metabox:
             - Type: "vagrant::config::vm::provider::virtualbox"
               Properties:
                 cpus: 4
-                memory: 4096
+                memory: 2048
                 machinefolder: "Fn::GetParameter custom_machine_folder"
 
             - Type: "metabox::vagrant::host"

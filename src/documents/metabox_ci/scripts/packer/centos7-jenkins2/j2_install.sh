@@ -36,12 +36,16 @@ until [ $n -ge 5 ]
 do
     cat /var/lib/jenkins/secrets/initialAdminPassword
     RETVAL=$?
-    [ $RETVAL -eq 0 ] && echo "All good, continue..."
-    [ $RETVAL -ne 0 ] && echo "Can't read initialAdminPassword for Jenkins2, sleeping 60s.." 
+    [ $RETVAL -eq 0 ] && echo "[$n/5] - trying to get admin pass" && break
+    [ $RETVAL -ne 0 ] && echo "[$n/5] - cannot read initialAdminPassword, sleeping 60s.." 
 
     n=$[$n+1]
     sleep 60s
 done
+
+# super paranoid
+cat /var/lib/jenkins/secrets/initialAdminPassword
+RETVAL=$?
 
 [ $RETVAL -eq 0 ] && echo "All good, continue..."
 [ $RETVAL -ne 0 ] && echo "Can't read initialAdminPassword for Jenkins2" && exit 1

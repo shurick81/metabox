@@ -2,13 +2,30 @@ boolean isWindows() {
     return env.OS == 'Windows_NT'
 }
 
+void patchWinCmd(String cmd) {
+    def result = cmd
+
+    // buy default, 'cd' on windows does not change drive
+    // this is a fix to ensure drive changes if metabox dirs are on seprate drives
+    // https://stackoverflow.com/questions/11065421/command-prompt-wont-change-directory-to-another-drive
+          
+    result = result.replace("cd ", "cd /d ")
+
+    // fixing up pwsh -> powershell on windows platform
+    // 'pwsh' usage makes it work consistently for both win and non-win environments 
+    result = result.gsub('pwsh ', 'powershell ')
+
+    return result
+}
 
 void runCmd(String cmd, String winCmd = null) {
     if(isWindows()) {
         if(winCmd != null) {
+            winCmd = patchWinCmd(winCmd)
             bat winCmd
         } else {
-            bat cmd
+            winCmd = patchWinCmd(cmd)
+            bat winCmd
         }
     } else {
         sh cmd

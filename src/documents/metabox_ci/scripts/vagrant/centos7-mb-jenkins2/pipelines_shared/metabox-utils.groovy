@@ -13,7 +13,7 @@ void patchWinCmd(String cmd) {
 
     // fixing up pwsh -> powershell on windows platform
     // 'pwsh' usage makes it work consistently for both win and non-win environments 
-    result = result.gsub('pwsh ', 'powershell ')
+    result = result.replace('pwsh ', 'powershell ')
 
     return result
 }

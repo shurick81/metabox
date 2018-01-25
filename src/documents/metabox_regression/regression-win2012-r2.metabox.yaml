@@ -381,7 +381,7 @@ Metabox:
                 dsc_check: "1"
 
         # deploys SharePoint 2013 server
-        sp13sp1:
+        sp13_sp1:
           Tags: ["sp2013"]
           VagrantTemplate:
             - Type: "vagrant::config::vm"

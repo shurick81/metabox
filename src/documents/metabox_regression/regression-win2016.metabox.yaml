@@ -419,7 +419,7 @@ Metabox:
                 execute_tests: true
 
                 # sharepoint specific settings
-                sp_version: "sp2013"
+                sp_version: "sp2016"
                 sp_role   : ["wfe"]
 
                 sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql14"
@@ -466,7 +466,7 @@ Metabox:
                 execute_tests: true
 
                 # sharepoint specific settings
-                sp_version: "sp2013"
+                sp_version: "sp2016"
                 sp_role   : ["wfe"]
 
                 sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql14"

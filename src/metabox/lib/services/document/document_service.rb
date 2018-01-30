@@ -20,8 +20,14 @@ module Metabox
 
         def generate(params)
 
-            log.debug "Cleaning up previous builds..."
-            _process_cleanup
+            # don't clean up every time
+            # all documents share the same scripts folder
+            # hence, parallel builds would fail deleting each other's script folder
+            # we'll fix this in later releases providing a dedicated snapshot of the script folder
+            # for evety build
+
+            #log.debug "Cleaning up previous builds..."
+            #_process_cleanup
 
             log.debug "Running generators..."
 
@@ -46,6 +52,9 @@ module Metabox
             log_message = ["\n"]
 
             documents = get_documents
+
+            log_message << "Found #{documents.count} metabox documents"
+            log_message << ""
 
             documents.each do | document |
                 log_message << " #{document} \n"
@@ -343,7 +352,7 @@ module Metabox
 
         def _process_vagrant_resources
 
-            log.info "Processing vagrant handlers..."
+            log.debug "Processing vagrant handlers..."
 
             to_dirs = [
                 File.join(env_service.get_metabox_vagrant_dir, "scripts/vagrant"),

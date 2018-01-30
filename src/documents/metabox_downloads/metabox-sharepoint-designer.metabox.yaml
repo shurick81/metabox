@@ -14,13 +14,7 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "7be30cadc49d66f116ab4aa303bbfed937846825" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip sharepointdesigner_32bit.exe" 
+ 
         spd_x64:
           Type: "metabox::http::file"
           Properties:
@@ -30,10 +24,3 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "60041617c421962c28e71f712e299e29f51651fb" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip sharepointdesigner_64bit.exe"

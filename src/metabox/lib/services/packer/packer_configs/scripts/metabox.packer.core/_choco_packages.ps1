@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
 if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-Log-MbInfoMessage "Creating new SharePoint farm..."
+Log-MbInfoMessage "Installing Chocolatey packages..."
 Trace-MbEnv
 
 $packages = @(

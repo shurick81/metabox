@@ -48,19 +48,29 @@ module Metabox
   class ApiClient < ServiceBase
     
     @os_service = nil
-    @task_services = nil
+    @task_service = nil
 
     def initialize
+
+      handle_version_call
+
       super
 
       _init_services
-      _init_task_services
 
-      log.info "Initialized Metabox API client"
+      log.info "Initialized Metabox API client, version: #{Metabox::VERSION}"
+    end
+
+    def handle_version_call
+      if ARGV.first == "metabox:version"
+        # suspress all logging for version task
+        # that produces clean output with version number
+        log.disable
+      end
     end
 
     def welcome_message
-        log.info "Running metabox (beta) with ENV variables:"
+        log.debug "  - environment variables:"
         
         env_vars = env_service.get_metabox_variables(raise_on_missing_vars: false)
         env_vars.each { | name, value |
@@ -73,26 +83,23 @@ module Metabox
           log.debug "#{name}=#{tmp_value}"
         }
 
-        log.info "Running metabox (beta) with params:"
+        log.debug " - cli arguments:"
         
         ARGV.each do |a|
           log.debug "#{a}"
         end
     
-        log.info "ENV['OS']: #{ENV['OS']}, windows?: #{@os_service.is_windows?}"
+        is_windows = @os_service.is_windows?
+
+        if is_windows 
+          log.info "Delected windows platform: #{ENV['OS']}"
+        else
+          log.info "Delected non-windows platform: #{ENV['OS']}"
+        end
     end
 
     def execute_task(task_name:, params:)
-      log.info "Executing Task: [#{task_name}] with params: #{params}"
-
-      task_parts = task_name.split(':')
-
-      service_name = task_parts[0]
-      task_name = task_parts[1]
-
-      service = @task_services[service_name]
-     
-      service.send(task_name, params) 
+      @task_service.execute_task(task_name: task_name, params: params)
     end
 
     def configure_vagrant(config:)
@@ -109,24 +116,17 @@ module Metabox
 
     private 
 
+    def _container
+      Metabox::ServiceContainer.instance
+    end
+
     def _get_document_service
-      Metabox::ServiceContainer.instance.get_service_by_name("metabox::tasks:document")
+      _container.get_service_by_name("metabox::tasks:document")
     end 
 
     def _init_services
-      @os_service = Metabox::ServiceContainer.instance.get_service_by_name("os")
-    end
-
-    def _init_task_services
-      @task_services = {}
-
-      services = get_services(Metabox::TaskServiceBase)
-
-      services.each do | service |
-        log.verbose "Regestering task service: #{service.name} -> #{service.rake_alias}"
-        @task_services[service.rake_alias] = service
-      end
-   
+      @os_service   = _container.get_service_by_name("os")
+      @task_service = _container.get_service_by_name("metabox::core::task_execution_service")
     end
 
   end

@@ -1,9 +1,11 @@
-
 # fail on errors and include metabox helpers
 $ErrorActionPreference = "Stop"
-. "c:/Windows/Temp/_metabox_core.ps1"
 
-Log-MbInfoMessage "Installing features required by SharePoint 2016..."	
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
+
+Log-MbInfoMessage "Installing features required by SharePoint 2016..."
+Trace-MbEnv
 
 Import-Module ServerManager 
 
@@ -78,3 +80,5 @@ foreach($feature in $features) {
     Log-MbInfoMessage "`tadding feature: $feature"	
     Add-WindowsFeature $feature
 }
+
+exit 0

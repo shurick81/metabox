@@ -23,7 +23,7 @@ if has_gem
     require "metabox"
 else
     metabox_api_path = File.absolute_path "#{METABOX_SRC_PATH}/metabox/lib/metabox.rb"
-    puts "require: #{metabox_api_path}"
+    puts "METABOX: requiring Ruby script: #{metabox_api_path}"
     require metabox_api_path
 end
 

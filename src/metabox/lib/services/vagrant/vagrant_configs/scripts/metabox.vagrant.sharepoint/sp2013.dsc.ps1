@@ -52,9 +52,29 @@ Configuration Install_SharePointFarm
             RebootNodeIfNeeded = $false
         }
 
+        # ensuring that required services are up before running SharePoint farm creation
+        # that allows to fail eraly in case of spoiled images
+        Service W3SVC
+        {
+            Name            = "W3SVC"
+            StartupType     = "Automatic"
+            State           = "Running"
+        }  
+
+        Service IISADMIN
+        {
+            DependsOn       = "[Service]W3SVC"
+
+            Name            = "IISADMIN"
+            StartupType     = "Automatic"
+            State           = "Running"
+        }  
+
         # initial farm creation
         SPFarm CreateSPFarm
         {
+            DependsOn                = "[Service]IISADMIN"
+
             Ensure                   = "Present"
             DatabaseServer           = $spSqlServerName
             FarmConfigDatabaseName   = ($spSqlDbPrefix +  "_Config")

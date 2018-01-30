@@ -13,11 +13,14 @@ Metabox:
             Checksum:
               Enabled: true
               Type: "sha1"
-              Value: "9928405ae16a6f3d5b46c5772c7492e6dd2a26c4" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip officeserver.img"
+              Value: "9928405ae16a6f3d5b46c5772c7492e6dd2a26c4"
+
+        sp2016_fp2:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "https://download.microsoft.com/download/1/D/4/1D47CBEE-9B6E-467D-9090-E99CC3B5954F/sts2016-kb4011127-fullfile-x64-glb.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/sp2016_fp2/sts2016-kb4011127-fullfile-x64-glb.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "8999e93063fd45b9674ba9dcc884659fde90487d" 

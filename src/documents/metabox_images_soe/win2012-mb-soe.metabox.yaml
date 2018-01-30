@@ -23,11 +23,6 @@ Metabox:
                   output_directory: "{{ user `metabox_working_dir` }}/packer_output/win2012-mb-soe-{{ user `metabox_git_branch` }}"
           
           provisioners:
-            # metabox PS helpers
-            # - type: "file"
-            #   source: "./scripts/packer/metabox.packer.core/_metabox_core.ps1"
-            #   destination: "c:/Windows/Temp/_metabox_core.ps1"
-           
             # bootstrapping chocolatey
             - type: "powershell"
               scripts:

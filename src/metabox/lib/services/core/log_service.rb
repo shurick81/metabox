@@ -21,12 +21,32 @@ module Metabox
         @log 
         @@instance = nil
 
+        @enabled;
+
         def name
             "log"
         end
 
         def initialize
+            @enabled = true
+
             _init_logger
+        end
+
+        def enable
+            @enabled = true
+        end
+
+        def disable
+            @enabled = false
+        end
+
+        def enabled?
+            @enabled == true
+        end
+
+        def disabled?
+            !enabled?
         end
 
         def self.instance
@@ -38,7 +58,11 @@ module Metabox
         end
 
         def info(message)
-            if !["INFO", "DEBUG"].include? _get_log_level
+            if disabled?
+                return
+            end
+
+            if !["INFO", "DEBUG"].include? _get_log_level 
                 return
             end
 
@@ -46,14 +70,26 @@ module Metabox
         end
 
         def error(message)
+            if disabled?
+                return
+            end
+            
             @log.error(message)
         end
 
         def warn(message)
+            if disabled?
+                return
+            end
+
             @log.warn(message)
         end
 
         def verbose(message)
+            if disabled?
+                return
+            end
+
             if !["VERBOSE"].include? _get_log_level
                 return
             end
@@ -62,6 +98,10 @@ module Metabox
         end
 
         def debug(message)
+            if disabled?
+                return
+            end
+
             if !["DEBUG", "VERBOSE"].include? _get_log_level
                 return
             end

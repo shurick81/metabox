@@ -141,6 +141,37 @@ module Metabox
             end
 
             def post_vagrant(config:)
+
+            end
+
+            def pre_vagrant_destroy(config:)
+                
+            end
+
+            def post_vagrant_destroy(config:)
+
+            end
+
+            def print_host_connection_info(environment_name:, vm_name:)
+                full_name = environment_name + "-" + vm_name
+
+                host_name  = get_host_name(environment_name: environment_name, vm_name: vm_name)
+                host_ip    = get_ip_address(environment_name: environment_name, vm_name: vm_name)
+                gateway_ip = get_environment_ip_range(name: environment_name) + ".1"
+                    
+                hostnames = [
+                    host_name,
+                    full_name
+                ]
+
+                log.info "  hostname:   #{host_name}"
+                log.info "  host_ip:    #{host_ip}"
+                log.info "  gateway_ip: #{gateway_ip}"
+
+                log.info "  hostnames:"
+                hostnames.each do | host_name |
+                    log.info "      - #{host_name}"
+                end
             end
 
             def configure(config:, vm_config:)
@@ -156,6 +187,15 @@ module Metabox
                 service = get_service_by_name("vagrant::stack")
                 service.post_vagrant(config: targeted_config)
             end
+
+            def execute_post_vagrant_destroy_config(environment_name:, vm_name:)
+                targeted_config = _get_vm_config(environment_name: environment_name, vm_name: vm_name)
+                
+                log.verbose "execute_post_vagrant_destroy_config"
+
+                service = get_service_by_name("vagrant::stack")
+                service.post_vagrant_destroy(config: targeted_config)
+            end
             
             def execute_pre_vagrant_config(environment_name:, vm_name:)
                 targeted_config = _get_vm_config(environment_name: environment_name, vm_name: vm_name)
@@ -166,6 +206,15 @@ module Metabox
                 service.pre_vagrant(config: targeted_config)
             end
 
+            def execute_pre_vagrant_destroy_config(environment_name:, vm_name:)
+                targeted_config = _get_vm_config(environment_name: environment_name, vm_name: vm_name)
+                
+                log.warn "execute_pre_vagrant_destroy_config"
+
+                service = get_service_by_name("vagrant::stack")
+                service.pre_vagrant_destroy(config: targeted_config)
+            end
+
             def configure_vagrant_config(config:)
                 
                 log.info "Metabox configures vagrant virtual machines..."
@@ -174,7 +223,7 @@ module Metabox
         
                 configure(config: current_config, vm_config: config)
 
-                log.info "Metabox completed vagrant VMs configuration. Vagrant takes it from here."
+                log.warn "Metabox completed vagrant VMs configuration. Vagrant takes it from here."
             end
 
             def get_host_name(environment_name:, vm_name:)
@@ -429,6 +478,9 @@ module Metabox
                     else
                         raise "Unsupported OS: #{os}"
                     end
+
+                    # validating required tools
+                    _validate_required_tools(config: target_vm)
                 end
 
                 # https://github.com/devopsgroup-io/vagrant-hostmanager
@@ -437,6 +489,17 @@ module Metabox
                 vm_config.hostmanager.manage_guest = false
             end
             
+            def _validate_required_tools(config:)
+            
+                tools = config.fetch('RequireTools', [])
+    
+                if tools.count > 0 
+                    log.info "Validating required tools..."
+                    tool_validation_service.require_tools(tool_names: tools)
+                end
+            
+            end
+
             def _get_vagrant_argv
                 args = ARGV
 

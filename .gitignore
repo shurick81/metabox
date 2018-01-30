@@ -9,3 +9,5 @@
 .DS_Store
 coverage/
 artifacts/
+src/config.user/
+src/config.custom/

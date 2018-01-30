@@ -1,24 +1,15 @@
+
 # fail on errors and include metabox helpers
 $ErrorActionPreference = "Stop"
-. "c:/Windows/Temp/_metabox_core.ps1"
 
-Log-MbInfoMessage "Running DSC: SP2013_InstallBin"
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-$installDir = $ENV:METABOX_INSTALL_DIR
-$productKey = $ENV:METABOX_SP_PRODUCT_KEY
+Log-MbInfoMessage "Running SharePoint prerequisiteinstaller..."
+Trace-MbEnv
 
-if($installDir -eq $null) {
-    throw "METABOX_INSTALL_DIR env var is null or empty"
-} else {
-    Log-MbInfoMessage "Using [ENV:METABOX_INSTALL_DIR]: $installDir"
-}
-
-if($productKey -eq $null) {
-    Log-MbInfoMessage "Can't find productKey - [ENV:METABOX_SP_PRODUCT_KEY] is NULL. Throwing..."
-    throw "Can't find productKey - [ENV:METABOX_SP_PRODUCT_KEY] is NULL. Throwing..."
-} else {
-    Log-MbInfoMessage "Using [ENV:METABOX_SP_PRODUCT_KEY]"
-}
+$installDir = Get-MbEnvVariable "METABOX_INSTALL_DIR"
+$productKey = Get-MbEnvVariable "METABOX_SP_PRODUCT_KEY"
 
 Configuration SP2013_InstallBin
 {

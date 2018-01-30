@@ -1,11 +1,15 @@
-
 # fail on errors and include metabox helpers
 $ErrorActionPreference = "Stop"
-. "c:/Windows/Temp/_metabox_core.ps1"
+
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
+
+Log-MbInfoMessage "Installing prereq for SharePoint 2013 RTM..."
+Trace-MbEnv
 
 $installDir = $ENV:METABOX_INSTALL_DIR
-$preReqDir = $ENV:METABOX_PREREQ_DIR
-$offline = $ENV:METABOX_PREREQ_OFFLINE
+$preReqDir  = $ENV:METABOX_PREREQ_DIR
+$offline    = $ENV:METABOX_PREREQ_OFFLINE
 
 Log-MbInfoMessage "Using [ENV:METABOX_PREREQ_OFFLINE]: $offline"
 

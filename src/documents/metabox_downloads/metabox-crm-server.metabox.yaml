@@ -13,11 +13,4 @@ Metabox:
             Checksum:
               Enabled: true
               Type: "sha1"
-              Value: "192882bccbc976b58f4259b4f9498edb1b23c526" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip CRM2016-Server-ENU-amd64.exe"
+              Value: "192882bccbc976b58f4259b4f9498edb1b23c526"

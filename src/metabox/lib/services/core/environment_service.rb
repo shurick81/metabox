@@ -134,7 +134,7 @@ module Metabox
         end
 
         def get_metabox_vagrant_delete_boxfile?
-            result = __env.fetch('METABOX_VAGRANT_DELETE_BOX_FILE', nil)
+            result = __env.fetch('METABOX_VAGRANT_DELETE_BOX_FILE', true)
 
             return !result.nil? 
         end
@@ -212,6 +212,22 @@ module Metabox
             result
         end
 
+        def get_metabox_vagrant_vm_folder
+            result = File.join get_metabox_working_dir, "vagrant_vms/default"
+
+            _ensure_folder result
+
+            result
+        end
+
+        def get_metabox_packer_vm_folder
+            result = File.join get_metabox_working_dir, "packer_vms/default"
+
+            _ensure_folder result
+
+            result
+        end
+
         def metabox_features_revisions?
             result = __env.fetch('METABOX_FEATURES_REVISIONS', nil)
             
@@ -247,7 +263,7 @@ module Metabox
             result
         end
 
-        def get_metabox_download_tool_cmd(default_value = "wget \"%<src>s\" -O %<dst>s")
+        def get_metabox_download_tool_cmd(default_value = "wget \"%<src>s\" %<options>s -O %<dst>s")
             result = __env.fetch('METABOX_FILESET_THREADS', default_value)
             result
         end
@@ -276,6 +292,11 @@ module Metabox
             # metabox vars
             hash["METABOX_GIT_BRANCH"] = get_metabox_branch
             hash["METABOX_DOWNLOADS_PATH"] = get_metabox_downloads_path
+            hash["METABOX_WORKING_DIR_EXPANDED"] = File.expand_path get_metabox_working_dir
+
+            hash["METABOX_BRANCHES_DIR"] = get_metabox_branches_dir
+            hash["METABOX_PACKER_BUILD_DIR"] = get_metabox_packer_dir
+            hash["METABOX_VAGRANT_BUILD_DIR"] = get_metabox_vagrant_dir
 
             # packer vars
             # https://www.packer.io/docs/other/environment-variables.html

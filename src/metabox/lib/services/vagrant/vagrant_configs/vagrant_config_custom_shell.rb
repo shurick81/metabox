@@ -21,6 +21,15 @@ module Metabox
                 _execute_scripts(config, 'pre_vagrant')
             end
 
+            def pre_vagrant_destroy(config:)
+
+                if !should_run?(config: config) 
+                    return 
+                end
+
+                _execute_scripts(config, 'pre_vagrant_destroy')
+            end
+
             def post_vagrant(config:)
 
                 if !should_run?(config: config) 
@@ -28,6 +37,15 @@ module Metabox
                 end
 
                 _execute_scripts(config, 'post_vagrant')
+            end
+
+            def post_vagrant_destroy(config:)
+
+                if !should_run?(config: config) 
+                    return 
+                end
+
+                _execute_scripts(config, 'post_vagrant_destroy')
             end
 
             def _execute_scripts(config, section)
@@ -56,10 +74,10 @@ module Metabox
                     return
                 end
 
-                home_folder = env_service.get_metabox_working_dir
+                home_folder = env_service.get_metabox_vagrant_dir
 
                 scripts.each do | script |
-                    run_cmd(cmd: "cd #{home_folder} && #{script}")
+                    run_cmd(cmd: "#{script}", pwd: home_folder)
                 end
             end
 

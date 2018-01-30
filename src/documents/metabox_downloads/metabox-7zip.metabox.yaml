@@ -9,7 +9,7 @@ Metabox:
           Type: "metabox::http::file"
           Properties:
             SourceUrl: "http://www.7-zip.org/a/7z1701.exe"
-            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/7zip/7z1701-x86.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/7z1701-x86/7z1701-x86.exe"
             Checksum:
               Enabled: true
               Type: "sha1"
@@ -26,7 +26,7 @@ Metabox:
           Type: "metabox::http::file"
           Properties:
             SourceUrl: "http://www.7-zip.org/a/7z1701-x64.exe"
-            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/7zip/7z1701-x64.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/7z1701-x64/7z1701-x64.exe"
             Checksum:
               Enabled: true
               Type: "sha1"

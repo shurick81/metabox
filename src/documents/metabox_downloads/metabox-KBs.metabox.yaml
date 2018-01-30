@@ -15,13 +15,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "e6f4da4d33564419065a7370865faacf9b40ff72" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip Windows8.1-KB2919355-x64.msu"    
 
         # this needs to go before KB2919355
         KB2919442-2012r2:
@@ -33,10 +26,3 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "f97d8290d9d75d96f163095c4cb05e1b9f6986e0" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip Windows8.1-KB2919442-x64.msu"        

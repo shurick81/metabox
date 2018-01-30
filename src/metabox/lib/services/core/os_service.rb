@@ -7,7 +7,7 @@ module Metabox
             "os"
         end
 
-        def process_windows_cmd(cmd:, masked_cmd:) 
+        def process_windows_cmd(cmd:, masked_cmd: nil) 
             # legacy fixes
             cmd = cmd.gsub('pwd', 'cd')
 
@@ -16,11 +16,19 @@ module Metabox
             # https://stackoverflow.com/questions/11065421/command-prompt-wont-change-directory-to-another-drive
             cmd = cmd.gsub('cd ', 'cd /d ')
             
+            # fixing up pwsh -> powershell on windows platform
+            # 'pwsh' usage makes it work consistently for both win and non-win environments 
+            cmd = cmd.gsub('pwsh ', 'powershell ')
+
             cmd
         end
 
         def run_cmd(cmd:, is_dry_run: false, pwd: nil, silent: false, valid_exit_codes: [0])
             
+            if is_windows?
+                cmd = process_windows_cmd(cmd: cmd)
+            end
+
             if pwd.nil?
                 pwd = env_service.get_metabox_working_dir
             end

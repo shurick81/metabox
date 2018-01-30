@@ -58,7 +58,7 @@ Configuration Configure_WinSOE {
             Key         = "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
             ValueName   = "NoAutoUpdate"
             ValueData   = 1
-            ValueType = "DWord"
+            ValueType   = "DWord"
         }
 
         Registry WindowsUpdate_AUOptions
@@ -67,7 +67,16 @@ Configuration Configure_WinSOE {
             Key         = "HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
             ValueName   = "AUOptions"
             ValueData   = 2
-            ValueType = "DWord"
+            ValueType   = "DWord"
+        }
+
+        Registry Windows_RemoteConnections
+        {
+            Ensure      = "Present"  
+            Key         = "HKLM:System\CurrentControlSet\Control\Terminal Server"
+            ValueName   = "fDenyTSConnections"
+            ValueData   = 0
+            ValueType   = "DWord"
         }
        
     }

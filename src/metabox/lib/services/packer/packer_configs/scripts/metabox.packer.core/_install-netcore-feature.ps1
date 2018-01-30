@@ -1,7 +1,11 @@
-
 # fail on errors and include metabox helpers
 $ErrorActionPreference = "Stop"
-. "c:/Windows/Temp/_metabox_core.ps1"
+
+$metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
+if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
+
+Log-MbInfoMessage "Installing NET-Framework-Core feature..."
+Trace-MbEnv
 
 Configuration NETFrameworkCore
 {
@@ -14,8 +18,9 @@ Configuration NETFrameworkCore
 
         WindowsFeature "NET-Framework-Core" 
         {
-            Ensure="Present"
-            Name = "NET-Framework-Core"
+            Ensure  = "Present"
+            Name    = "NET-Framework-Core"
+            Source  = "Windows Update"
         }
     }
 }

@@ -24,14 +24,7 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "b2ff712ca0947040ca0b8e9bd7436a3c3524bb5d" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
-
+          
         dotNetFx45_Full_setup:
           Type: "metabox::http::file"
           Properties:
@@ -41,13 +34,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "f6ba6f03c65c3996a258f58324a917463b2d6ff4" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         Windows6.1-KB2506143-x64:
           Type: "metabox::http::file"
@@ -58,13 +44,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "31b738cc9a7ffb3addd3c575fc58dfa726be8a8a" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         sqlncli:
           Type: "metabox::http::file"
@@ -75,13 +54,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "6a694d7b751372e18f00b191147d005b0b580298" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         sqlncli_amd64:
           Type: "metabox::http::file"
@@ -92,13 +64,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "83ab8f54b56eb059d6848b1e0ce6efd5ea1ccbee" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         Windows6.1-KB974405-x64:
           Type: "metabox::http::file"
@@ -109,13 +74,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "453cf16fec3a0a6674313660d783f323c6844858" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         Synchronization:
           Type: "metabox::http::file"
@@ -126,13 +84,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "211f16bd9254eaf6d0d838b944f25ad34a83da72" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         WindowsServerAppFabricSetup_x64:
           Type: "metabox::http::file"
@@ -143,13 +94,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "6ebaa4c9100b1bc8ce4986a97be810b715783c09" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         AppFabric1.1-KB2932678-x64-ENU:
           Type: "metabox::http::file"
@@ -160,13 +104,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "aa96ed85f750d91e92e16577169ca259822e3130" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         MicrosoftIdentityExtensions:
           Type: "metabox::http::file"
@@ -177,13 +114,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "200f72f12a0272f10e04bfd2462dff11b5e81c4a" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         setup_msipc_x64:
           Type: "metabox::http::file"
@@ -194,13 +124,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "e21612d85d81007d7b76d344b64bf68831ab234f" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         WcfDataServices-5.0:
           Type: "metabox::http::file"
@@ -211,13 +134,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "bdedf753fffb801304944ab9c49bcdadbf6ad137" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         WcfDataServices-5.6:
           Type: "metabox::http::file"
@@ -228,13 +144,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "410548872df5168938a6253cd16696dca96ede94" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         AppFabric1.1-RTM-KB2671763-x64-ENU:
           Type: "metabox::http::file"
@@ -245,13 +154,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "d2a3c164a0539c75277726fba0ea190f4e024533" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         447698_intl_x64_zip:
           Type: "metabox::http::file"
@@ -262,13 +164,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "324f8abfc7f3146731907167c3555ca42f7d0a5a" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         433385_intl_x64_zip:
           Type: "metabox::http::file"
@@ -279,13 +174,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "ddf375dc976caaf1d95a5f23d36f7704847fcc51" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         427087_intl_x64_zip:
           Type: "metabox::http::file"
@@ -296,13 +184,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "fc2e76908680ad2752b74feee564cb0f5c86a5ef" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         Windows6.1-KB2567680-x64:
           Type: "metabox::http::file"
@@ -313,13 +194,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "9fb969409f32eb8988d5e68ea1b56d13dac75a1d" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
           
         NDP45-KB2759112-x64:
           Type: "metabox::http::file"
@@ -330,13 +204,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "b45ae98ef267c136b62f86827854eb750d2ba318" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         Windows8-RT-KB2765317-x64:
           Type: "metabox::http::file"
@@ -347,13 +214,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "a7718c7e39903eeb63dc3667d143102692d13faa" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
 
         svrsetup_15-0-4709-1000_x64:
           Type: "metabox::http::file"
@@ -364,15 +224,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "05ce1354400bc6534e74347956ac0089393b859e" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "echo 'post'"
-
-        
 
     sp2013:
       Type: "metabox::http::file_set"
@@ -387,13 +238,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "a56ab44905f71556f37b8abe60eb23489e40e2e6" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip sharepoint.exe"
 
         sp2013server_rtm:
           Type: "metabox::http::file"
@@ -404,10 +248,3 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "7c0af157cf2e0c2ec5288e4c52d91cea86816010" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip SharePointServer_x64_en-us.img"

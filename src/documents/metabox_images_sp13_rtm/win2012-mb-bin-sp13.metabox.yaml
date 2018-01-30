@@ -7,6 +7,12 @@ Metabox:
       Type: "metabox::packer::build"
       Parameters:
         box_name: "win2012-mb-app-${ENV:METABOX_GIT_BRANCH}"
+        # SP 2013 RTM key
+        sp_product_key: "NQTMW-K63MQ-39G6H-B2CH9-FRDWJ"
+        # these files coming from file resources below
+        sp_install_dir: "C:\\_metabox_resources\\sp2013server_rtm"
+        sp_prereq_dir : "C:\\_metabox_resources\\sp2013_prerequisites"
+        
       Properties:
         PackerFileName: "win2012-mb-bin-sp13.json"
         VagrantBoxName: "win2012-mb-bin-sp13-${ENV:METABOX_GIT_BRANCH}"
@@ -25,11 +31,6 @@ Metabox:
                   output_directory: "{{ user `metabox_working_dir` }}/packer_output/win2012-mb-bin-sp13-{{ user `metabox_git_branch` }}"
                   http_directory: "{{ user `http_directory` }}"
           provisioners:
-            # metabox PS helpers
-            # - type: "file"
-            #   source: "./scripts/packer/metabox.packer.core/_metabox_core.ps1"
-            #   destination: "c:/Windows/Temp/_metabox_core.ps1"
-
             # vagrant_win12_sysprep supporting files
             - type: "file"
               source: "./scripts/packer/metabox.packer.core/answer_files/2012/Autounattend_sysprep.xml"
@@ -44,11 +45,13 @@ Metabox:
               environment_vars:
                 - "METABOX_RESOURCE_NAME=sp2013server_rtm"
             
-            - type: "powershell"
-              scripts:
-                - "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
-              environment_vars:
-                - "METABOX_RESOURCE_NAME=sp2013_prerequisites"
+            # coudn't get offline prereq to work, skipping
+            # skipping sp2013_prerequisites trasfer
+            # - type: "powershell"
+            #   scripts:
+            #     - "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
+            #   environment_vars:
+            #     - "METABOX_RESOURCE_NAME=sp2013_prerequisites"
           
             # SP2013 prerequisites: install, reboot, install
             # by this time, 'app' image shoudl already have windows features and NET35 installed
@@ -57,8 +60,8 @@ Metabox:
               scripts:
                 - "./scripts/packer/metabox.packer.core/_sp2013_pre_rtm.ps1"
               environment_vars:
-                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2013server_rtm"
-                - "METABOX_PREREQ_DIR=C:\\_metabox_resources\\sp2013_prerequisites"
+                - "METABOX_INSTALL_DIR=${GetParameter:sp_install_dir}"
+                - "METABOX_PREREQ_DIR=${GetParameter:sp_prereq_dir}"
                 # just can't get it working yet, this one would force prereq install in offline mode
                 # - "METABOX_PREREQ_OFFLINE=1"
             - type: "windows-restart"
@@ -67,8 +70,8 @@ Metabox:
               scripts:
                 - "./scripts/packer/metabox.packer.core/_sp2013_pre_rtm.ps1"
               environment_vars:
-                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2013server_rtm"
-                - "METABOX_PREREQ_DIR=C:\\_metabox_resources\\sp2013_prerequisites"
+                - "METABOX_INSTALL_DIR=${GetParameter:sp_install_dir}"
+                - "METABOX_PREREQ_DIR=${GetParameter:sp_prereq_dir}"
                 # - "METABOX_PREREQ_OFFLINE=1"
             - type: "windows-restart"
 
@@ -76,8 +79,8 @@ Metabox:
               scripts:
                 - "./scripts/packer/metabox.packer.core/_sp2013_pre_rtm.ps1"
               environment_vars:
-                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2013server_rtm"
-                - "METABOX_PREREQ_DIR=C:\\_metabox_resources\\sp2013_prerequisites"
+                - "METABOX_INSTALL_DIR=${GetParameter:sp_install_dir}"
+                - "METABOX_PREREQ_DIR=${GetParameter:sp_prereq_dir}"
                 # - "METABOX_PREREQ_OFFLINE=1"
                 # skipping DSC check because it won't find WFC 5.6 on win2012 and SP13 RTM install
                 # - "METABOX_DSC_CHECK=1"
@@ -88,24 +91,24 @@ Metabox:
               scripts:
                 - "./scripts/packer/metabox.packer.core/_sp2013_bin.ps1"
               environment_vars:
-                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2013server_rtm"
-                - "METABOX_SP_PRODUCT_KEY=NQTMW-K63MQ-39G6H-B2CH9-FRDWJ"
+                - "METABOX_INSTALL_DIR=${GetParameter:sp_install_dir}"
+                - "METABOX_SP_PRODUCT_KEY=${GetParameter:sp_product_key}"
             - type: "windows-restart"
 
             - type: "powershell"
               scripts:
                 - "./scripts/packer/metabox.packer.core/_sp2013_bin.ps1"
               environment_vars:
-                - "METABOX_INSTALL_DIR=C:\\_metabox_resources\\sp2013server_rtm"
-                - "METABOX_SP_PRODUCT_KEY=NQTMW-K63MQ-39G6H-B2CH9-FRDWJ"
+                - "METABOX_INSTALL_DIR=${GetParameter:sp_install_dir}"
+                - "METABOX_SP_PRODUCT_KEY=${GetParameter:sp_product_key}"
                 - "METABOX_DSC_CHECK=1"
 
             # finalizing image
             # cleaning up install folder, smaller image
             - type: "powershell"
               inline:
-                - "Remove-Item 'C:\\_metabox_resources\\sp2013server_rtm\\*' -Recurse -Force -ErrorAction SilentlyContinue"
-                - "Remove-Item 'C:\\_metabox_resources\\sp2013_prerequisites\\*' -Recurse -Force -ErrorAction SilentlyContinue"
+                - "Remove-Item '${GetParameter:sp_install_dir}\\*' -Recurse -Force -ErrorAction SilentlyContinue"
+                - "Remove-Item '${GetParameter:sp_prereq_dir}\\*' -Recurse -Force -ErrorAction SilentlyContinue"
 
             # ensuring no pending reboots are here
             - type: "windows-restart"

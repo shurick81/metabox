@@ -40,11 +40,6 @@ Metabox:
               source: "./scripts/packer/metabox.packer.core/answer_files/2016/Autounattend_sysprep.xml"
               destination: "c:/Autounattend_sysprep.xml"
 
-            # metabox PS helpers
-            # - type: "file"
-            #   source: "./scripts/packer/metabox.packer.core/_metabox_core.ps1"
-            #   destination: "c:/Windows/Temp/_metabox_core.ps1"
-
             # pre-install virtual box additions
             - type: "powershell"
               scripts:
@@ -53,6 +48,7 @@ Metabox:
                 - "virtualbox-iso"
 
             # installing all required features, rebooting
+            # mostly, uninstalling Defender feature
             - type: "powershell"
               scripts:
                 - "./scripts/packer/metabox.packer.core/win2016/_install-features-win16.ps1"

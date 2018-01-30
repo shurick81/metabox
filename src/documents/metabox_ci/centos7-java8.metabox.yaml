@@ -4,6 +4,7 @@ Metabox:
   Resources:
     centos7-mb-java8:
       Type: "metabox::packer::build"
+      OS  : "linux"
       Parameters:
         box_name: "geerlingguy/centos7"
       Properties:

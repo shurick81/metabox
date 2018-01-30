@@ -25,17 +25,28 @@ iptables -I INPUT 1 -p tcp --dport 80 -j ACCEPT
 echo "service jenkins start..."
 service jenkins start
 
-
 echo "Waiting 2 minutes until jenkins2 is up..."
 sleep 120s
 
 echo "Reporting Jenskins status"
 service jenkins status
 
-echo "Trying initialAdminPassword"
+n=0
+until [ $n -ge 5 ]
+do
+    cat /var/lib/jenkins/secrets/initialAdminPassword
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && echo "[$n/5] - trying to get admin pass" && break
+    [ $RETVAL -ne 0 ] && echo "[$n/5] - cannot read initialAdminPassword, sleeping 60s.." 
 
+    n=$[$n+1]
+    sleep 60s
+done
+
+# super paranoid
 cat /var/lib/jenkins/secrets/initialAdminPassword
 RETVAL=$?
+
 [ $RETVAL -eq 0 ] && echo "All good, continue..."
 [ $RETVAL -ne 0 ] && echo "Can't read initialAdminPassword for Jenkins2" && exit 1
 

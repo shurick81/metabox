@@ -15,13 +15,13 @@ module Metabox
         end
 
         def list(params)
-            log.info "Running task [#{__method__}] with arguments: #{params}"
+            #log.info "Running task [#{__method__}] with arguments: #{params}"
             
             document_service.list params
         end
 
         def generate(params)
-            log.info "Running task [#{__method__}] with arguments: #{params}"
+            #log.info "Running task [#{__method__}] with arguments: #{params}"
      
             document_service.generate params
         end

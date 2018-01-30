@@ -56,6 +56,21 @@ module Metabox
                                         source: "#{get_handler_shared_path}/sp.helpers.ps1", 
                                         destination: "#{get_handler_host_shared_path}/sp.helpers.ps1"
 
+                if sp_version == "sp2016" 
+                    # provision, pre-setup 1
+                    vm_config.vm.provision "shell", 
+                                            path: get_handler_script_path("sp2016.pre_setup1.dsc.ps1"), 
+                                            env: env
+
+                    # reload
+                    vm_config.vm.provision "reload"
+
+                    # provision, pre-setup 2
+                    vm_config.vm.provision "shell", 
+                                            path: get_handler_script_path("sp2016.pre_setup2.dsc.ps1"), 
+                                            env: env
+                end
+
                 # provision
                 vm_config.vm.provision "shell", 
                                         path: get_handler_script_path("#{sp_version}.dsc.ps1"), 

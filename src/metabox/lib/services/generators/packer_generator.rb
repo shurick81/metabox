@@ -45,7 +45,7 @@ module Metabox
                 packer_service.configure(config: template, packer_config: packer_config)
 
                 packer_file = File.join dir, file_name
-                log.info "Saving Packer template: #{file_name} -> #{packer_file}"
+                log.debug "Saving Packer template: #{file_name} -> #{packer_file}"
                 
                 log.verbose "YAML:"
                 log.verbose packer_config.to_yaml

@@ -137,6 +137,18 @@ module Metabox
             get_service(Metabox::YamlConfigService)
         end
 
+        def virtualbox_service
+            get_service_by_name("metabox::core::virtualbox_service")
+        end
+
+        def task_service
+            get_service_by_name("metabox::core::task_execution_service")
+        end
+
+        def tool_validation_service
+            get_service_by_name("metabox::core::tool_validation_service")
+        end
+
         def document_service
             _get_document_service
         end
@@ -145,8 +157,8 @@ module Metabox
             get_service(Metabox::DocumentService)
         end
 
-        def run_cmd(cmd:, silent: false)
-            os_service.run_cmd(cmd:cmd, silent: silent)
+        def run_cmd(cmd:, silent: false, pwd: nil, valid_exit_codes:[0])
+            os_service.run_cmd(cmd:cmd, silent: silent, pwd: pwd, valid_exit_codes: valid_exit_codes)
         end
 
         def create_packer_vars_file(template_name:)

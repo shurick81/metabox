@@ -32,10 +32,10 @@ module Metabox
                 "post_shutdown_delay" => "2m",
 
                 "floppy_files" => [
-                   "./scripts/packer/answer_files/2016/autounattend.xml",
-                   "./scripts/packer/win2016/winrm.ps1",
-                   "./scripts/packer/win2016/run-sysprep-nounattend.cmd",
-                  "./scripts/packer/win2016/run-sysprep-nounattend.ps1"
+                   "./scripts/packer/metabox.packer.core/answer_files/2016/autounattend.xml",
+                   "./scripts/packer/metabox.packer.core/win2016/winrm.ps1",
+                   "./scripts/packer/metabox.packer.core/win2016/run-sysprep-nounattend.cmd",
+                   "./scripts/packer/metabox.packer.core/win2016/run-sysprep-nounattend.ps1"
                 ],
 
                 "vboxmanage" => [

@@ -43,9 +43,19 @@ module Metabox
 
                 vm_config.vm.provision "shell", path: get_handler_script_path("sql.dsc.ps1"), env: env
             
-                execute_tests config: config, 
-                              vm_config: vm_config, 
-                              paths: "#{get_handler_tests_scripts_path}/sql.dsc.*"
+                sql_version = default_properties.fetch('sql_version', 'sql12')
+
+                case sql_version
+                when "sql12"
+                    execute_tests config: config, 
+                                vm_config: vm_config, 
+                                paths: "#{get_handler_tests_scripts_path}/sql12.dsc.*"
+                when "sql16"
+                    execute_tests config: config, 
+                                vm_config: vm_config, 
+                                paths: "#{get_handler_tests_scripts_path}/sql16.dsc.*"
+                end
+
                  
             end
 

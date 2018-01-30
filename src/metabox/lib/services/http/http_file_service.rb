@@ -54,8 +54,10 @@ module Metabox
             
             src = get_section_value(resource.values.first, "Properties.SourceUrl")
             dst = get_section_value(resource.values.first, "Properties.DestinationPath")
+            options = get_section_value(resource.values.first, "Properties.Options", [])
 
             should_download = _process_checksum(resource_name, resource, dst)
+            should_pack     = get_section_value(resource.values.first, "Properties.IsFileResource", true)
 
             if should_download 
                 
@@ -65,13 +67,17 @@ module Metabox
                 # download
                 _download_file(
                     src: src,
-                    dst: dst
+                    dst: dst,
+                    options: options
                 )
 
                 file_sha1_value = _get_file_sha1_value(dst)
                 log.warn "SHA1: #{file_sha1_value} for file: #{dst}"
             end
-            
+
+            if should_pack 
+                _process_resource_zip_folder(file_path: dst)
+            end            
         end
 
         def _process_checksum(resource_name, resource, file_path)
@@ -131,13 +137,15 @@ module Metabox
             end
         end
 
-        def _download_file(src:, dst:)
+        def _download_file(src:, dst:, options: [])
 
             dst_folder = File.basename dst
             log.debug "Ensuring folder: #{dst_folder}"
             FileUtils.mkdir_p dst_folder
 
-            cmd = _get_download_tool_cmd % {src: src, dst: dst}                            
+            options_string = options.join(' ')
+
+            cmd = _get_download_tool_cmd % {src: src, dst: dst, options: options_string }                            
             data = {:out => [], :err => []}
 
             log.info "Running download: #{cmd}"
@@ -190,11 +198,57 @@ module Metabox
 
         def execute_inline_scripts(home_folder, scripts)
 
-            # hack to clean up /zip folder
-            FileUtils.rm_rf "#{home_folder}/zip"
+        
 
             scripts.each do | script |
                 run_cmd(cmd: "cd #{home_folder} && #{script}")
+            end
+        end
+
+        def _process_resource_zip_folder(file_path:)
+
+            folder_path = File.dirname file_path
+            file_name   = File.basename file_path
+
+            http_test_file_path = File.join(folder_path, "zip/metabox-http-test.txt")
+
+            log.info "Checking is file exists: #{http_test_file_path}"
+            should_zip  = !File.exists?(http_test_file_path)
+
+            if should_zip
+                log.info "  - creating ZIP folder for file: #{file_name}"    
+
+                home_folder = folder_path
+                cmd_string = "7z -v500m a zip/dist.zip #{file_name}"   
+                
+                # hack to clean up /zip folder
+                # zip would fail if it exists
+                FileUtils.rm_rf "#{home_folder}/zip"
+
+                result = run_cmd(cmd: cmd_string, pwd: home_folder)
+
+                # crafting metabox-http-test file
+                # this file is used to 
+                # - ensure that ZIP packaging was done with a positive outcome
+                # - check is resource exists before transferring it to Packer/Vagrant
+                if result == true
+                    _create_http_test_file folder_path
+                else
+                    error_message "Got non-0 exit code while packing archive. File was: #{file_path}"
+
+                    log.error error_message
+                    raise error_message
+                end
+            else
+                log.info "  - ZIP folder exists for file: #{file_name}"    
+            end
+        end
+
+        def _create_http_test_file(folder_path)
+            file_path = File.join folder_path, "zip/metabox-http-test.txt"
+
+            open(file_path, 'w') do |f|
+                f.puts "yes"
             end
         end
     end

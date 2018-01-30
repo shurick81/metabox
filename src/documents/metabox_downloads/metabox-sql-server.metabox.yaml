@@ -14,14 +14,7 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "be00942cc56d033e2c9dce8a17a6f2654f5184a3" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip SQLFULL_ENU.iso"     
-
+              
         sql2014sp1:
           Type: "metabox::http::file"
           Properties:
@@ -31,13 +24,7 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "d5fd3dabd8a66a7ea661d7fb1af444bfaacb22e3" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip SQLServer2014SP1-FullSlipstream-x64-ENU.iso"     
+
         sql2016_rtm:
           Type: "metabox::http::file"
           Properties:
@@ -47,10 +34,15 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "ce21bf1c08ec1ac48ebb4988a8602c7813034ea3" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip SQLServer2016-x64-ENU.iso"
+
+        sql-ssms17.04:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "https://go.microsoft.com/fwlink/?linkid=864329"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/sql-ssms17.04/ssms-setup-enu.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "fb48d148724ca62b330fc23ea31d080ef5607608" 
+
+        

@@ -17,13 +17,6 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "918ea4a911858d32c977148026e7edb7b238e6f6" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip vs2013.5.ent_enu.iso"
 
         # Visual Studio 2015 SP3 ISO
         # https://www.kunal-chowdhury.com/2015/07/download-visualstudio-2015.html#b7GbWSlJxPurpwlA.97
@@ -36,10 +29,3 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "40ea340070e3684935689e60d8b7669d519d49d4" 
-            Hooks:
-              Pre: 
-                Inline: 
-                  - "echo 'pre-download'" 
-              Post: 
-                Inline: 
-                  - "7z -v500m a zip/dist.zip vs2015.3.ent_enu.iso"

@@ -10,7 +10,14 @@ Trace-MbEnv
 $productName = Get-MbEnvVariable "METABOX_VS_PRODUCT_NAME"
 
 if ($productName.Contains("2015") -eq $true) {
+
     Log-MbInfoMessage "Detected VS 2015 install. Ensuring additional plugins..."
+
+    # ensuring "choco install -y webpicmd" is here
+    # it should come with APP image but in case we failed or building on old image, install it in the fly
+    Log-MbInfoMessage "Ensuring webpicmd install..."
+    choco install -y webpicmd
+    Validate-MbExitCode $LASTEXITCODE "Cannot run choco install -y webpicmd"
 
     Log-MbInfoMessage "Installing Office Development tools via webpicmd"
     # https://github.com/mszcool/devmachinesetup/blob/master/Install-WindowsMachine.ps1
@@ -19,7 +26,6 @@ if ($productName.Contains("2015") -eq $true) {
     
 } else {
     Log-MbInfoMessage "No post deploy is needed..."
-
 }
 
 Log-MbInfoMessage  "Visual Studio post-deploy script completed."

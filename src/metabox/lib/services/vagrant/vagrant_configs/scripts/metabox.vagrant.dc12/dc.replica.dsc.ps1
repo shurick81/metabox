@@ -4,7 +4,7 @@ $ErrorActionPreference = "Stop"
 $metaboxCoreScript = "c:/Windows/Temp/_metabox_core.ps1"
 if(Test-Path $metaboxCoreScript) { . $metaboxCoreScript } else { throw "Cannot find core script: $metaboxCoreScript"}
 
-Log-MbInfoMessage "Installing primary controller..."
+Log-MbInfoMessage "Installing replica domain controller..."
 Trace-MbEnv
 
 $domainName =           Get-MbEnvVariable "METABOX_DC_DOMAIN_NAME"
@@ -14,7 +14,11 @@ $domainAdminPassword =  Get-MbEnvVariable "METABOX_DC_DOMAIN_ADMIN_PASSWORD"
 Log-MbInfoMessage "Fixing DC promo settings..."
 Fix-MbDCPromoSettings $domainAdminPassword
 
-Configuration Install_DomainController {
+# disable IP6 to ensure replica controller can be promoted
+Log-MbInfoMessage "Disabling IP6 interfaces..."
+Disable-MbIP6Interface
+
+Configuration Install_ReplicaDomainController {
 
     Import-DscResource -ModuleName xActiveDirectory
     Import-DscResource -ModuleName xNetworking
@@ -29,6 +33,7 @@ Configuration Install_DomainController {
         
         $domainAdminCreds = New-Object System.Management.Automation.PSCredential($domainAdminName, $securePassword)
         $safeModeAdminCreds = $domainAdminCreds
+        $dnsDelegationCreds = $domainAdminCreds
 
         LocalConfigurationManager
         {
@@ -37,19 +42,19 @@ Configuration Install_DomainController {
             RefreshMode = "Push"
         }
 
-        WindowsFeature DNS
-        {
-            Ensure = "Present"
-            Name   = "DNS"
-        }
+        # WindowsFeature DNS
+        # {
+        #     Ensure = "Present"
+        #     Name   = "DNS"
+        # }
 
-        xDnsServerAddress DnsServerAddress
-        {
-            Address        = '127.0.0.1'
-            InterfaceAlias = 'Ethernet'
-            AddressFamily  = 'IPv4'
-            DependsOn      = "[WindowsFeature]DNS"
-        }
+        # xDnsServerAddress DnsServerAddress
+        # {
+        #     Address        = '127.0.0.1'
+        #     InterfaceAlias = 'Ethernet'
+        #     AddressFamily  = 'IPv4'
+        #     DependsOn      = "[WindowsFeature]DNS"
+        # }
 
         WindowsFeature ADDSInstall
         {
@@ -57,37 +62,33 @@ Configuration Install_DomainController {
             Name   = "AD-Domain-Services"
         }
 
-        WindowsFeature ADDSRSAT
-        {
-            Ensure = "Present"
-            Name   = "RSAT-ADDS-Tools"
-        }
+        # WindowsFeature ADDSRSAT
+        # {
+        #     Ensure = "Present"
+        #     Name   = "RSAT-ADDS-Tools"
+        # }
 
-        WindowsFeature RSAT
-        {
-            Ensure = "Present"
-            Name   = "RSAT"
-        }
+        # WindowsFeature RSAT
+        # {
+        #     Ensure = "Present"
+        #     Name   = "RSAT"
+        # }
 
-        xADDomain PrimaryDomainController
+        xADDomainController ReplicaDomainController
         {
             DomainName = $domainName
             # win16 fix
             # http://vcloud-lab.com/entries/active-directory/powershell-dsc-xactivedirectory-error-a-netbios-domain-name-must-be-specified-
-            DomainNetBIOSName = $domainName.Split('.')[0]
+            # DomainNetBIOSName = $domainName.Split('.')[0]
             
             DomainAdministratorCredential = $domainAdminCreds
             SafemodeAdministratorPassword = $safeModeAdminCreds
             
-            DatabasePath = "C:\NTDS"
-            LogPath      = "C:\NTDS"
-            SysvolPath   = "C:\SYSVOL"
-            
             DependsOn = @(
-                "[WindowsFeature]ADDSInstall", 
-                "[WindowsFeature]RSAT", 
-                "[WindowsFeature]ADDSRSAT", 
-                "[xDnsServerAddress]DnsServerAddress"
+                "[WindowsFeature]ADDSInstall" 
+                # "[WindowsFeature]RSAT", 
+                # "[WindowsFeature]ADDSRSAT",
+                #"[xDnsServerAddress]DnsServerAddress"
             )
         }
     }
@@ -111,6 +112,6 @@ $config = @{
     )
 }
 
-Apply-MbDSC "Install_DomainController" $config 
+Apply-MbDSC "Install_ReplicaDomainController" $config 
 
 exit 0

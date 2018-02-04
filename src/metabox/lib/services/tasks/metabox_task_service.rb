@@ -209,47 +209,61 @@ module Metabox
 
         def destroy_vm(params)
             log.info "Destroying virtual machine..."
+       
+            begin
+                # update METABOX_FEATURES_REVISIONS flag
+                env_service.enable_revisions
+
+                _execute_workflow(tasks: [
+                    {
+                        name: "resource:generate",
+                        params: [],
+                        description: "generating resources"
+                    },
+
+                    {
+                        name: "resource:list",
+                        params: [],
+                        description: "listing resources"
+                    },
+
+                    {
+                        name: "vagrant:destroy",
+                        params: params,
+                        description: "starting virtual machine"
+                    }
+                ])
+            ensure
+                env_service.disable_revisions
+            end
+        end
+
+        def apply_revision(params)
+            log.info "Applying revision to virtual machine..."
+
+            vm = params[0]
+            revision_names =  params[1]
+
+            if revision_names.nil? 
+                revision_names = ""
+            end
+
+            revision_names = revision_names.gsub(',', '+')
 
             _execute_workflow(tasks: [
                 {
-                    name: "resource:generate",
-                    params: [],
+                    name: "metabox:start_vm",
+                    params: [
+                        "#{vm}",
+                        "--provision",
+                        "provision_tags=#{revision_names}"
+                    ],
                     description: "generating resources"
-                },
-
-                {
-                    name: "resource:list",
-                    params: [],
-                    description: "listing resources"
-                },
-
-                {
-                    name: "vagrant:destroy",
-                    params: params,
-                    description: "starting virtual machine"
                 }
             ])
         end
 
         private
-
-        def _execute_workflow(tasks:) 
-            all_tasks_count = tasks.count
-            task_flow = " \n - " + (tasks.collect { |t| t[:name] + "#{t[:params]}" }).join("\n - ")
-
-            log.info "  - executing [#{all_tasks_count}] tasks: #{task_flow}"
-
-            tasks.each do | task |
-                current_task_index = (tasks.index(task) + 1)
-            
-                log.info "  - [#{current_task_index}/#{all_tasks_count}] running task #{task[:description]}..."
-               
-                task_service.execute_task(
-                    task_name: task[:name], 
-                    params: task[:params]
-                )
-            end
-        end
 
         def _print_version_raw
             puts Metabox::VERSION

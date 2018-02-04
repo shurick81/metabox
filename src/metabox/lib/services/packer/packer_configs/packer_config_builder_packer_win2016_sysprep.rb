@@ -18,6 +18,11 @@ module Metabox
                 # https://github.com/hashicorp/packer/issues/2401
                 "headless" => true,
 
+                # 60G by default to support developer VMs with SQL+SP+VS installs
+                # https://www.packer.io/docs/builders/virtualbox-iso.html#disk_size
+                # https://github.com/SubPointSolutions/metabox/issues/19
+                "disk_size" => 61440,
+
                 "guest_additions_mode" => "attach",
                 "guest_os_type" => "Windows2012_64",
 

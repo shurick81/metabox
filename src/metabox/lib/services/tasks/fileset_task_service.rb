@@ -21,18 +21,64 @@ module Metabox
             log.debug "batch_threads: #{batch_size}"
 
             name = params.first
+            force = params[1] == "--force"
+
             _validate_name_param(name)
 
             file_resource_names = _get_resource_names(name)
             
             _execute_pre_handlers(name, file_resource_names)
-            _download_resources(file_resource_names, batch_size)
+            _download_resources(file_resource_names, batch_size, force)
             _execute_post_handlers(name, file_resource_names)
+        end
+
+        def import_from_file(params)
+            log.info "Executing 'import' task with parameters: #{params}"
+           
+            name = params.first
+            path = params[1]
+            force = params[2] == "--force"
+
+            _validate_name_param(name)
+            
+            _execute_pre_handlers(name, [name])
+            _import_resource(name, path, force)
+            _execute_post_handlers(name, [name])
+        end
+
+        def pack(params)
+            batch_size = _get_batch_threads
+
+            log.info "Executing 'pack' task with parameters: #{params}"
+
+            name = params.first
+            force = params[1] == "--force"
+
+            _validate_name_param(name)
+
+            file_resource_names = _get_resource_names(name)
+
+            _pack_resources(file_resource_names, batch_size, force)
         end
 
         private
 
-        def _download_resources(file_resource_names, batch_size)
+        def _pack_resources(file_resource_names, batch_size, force = false)
+            file_resource_names.each_slice(batch_size) do | resource_batch |
+
+                threads = []   
+
+                resource_batch.each do | file_resource_name |
+                    threads << Thread.new { 
+                        _pack_resource(file_resource_name, force)
+                    }
+                end
+
+                threads.each { |t| t.join }
+            end
+        end
+
+        def _download_resources(file_resource_names, batch_size, force = false)
             
             file_resource_names.each_slice(batch_size) do | resource_batch |
 
@@ -40,7 +86,7 @@ module Metabox
 
                 resource_batch.each do | file_resource_name |
                     threads << Thread.new { 
-                        _execute_resource(file_resource_name)
+                        _execute_resource(file_resource_name, force)
                     }
                 end
 
@@ -70,7 +116,6 @@ module Metabox
                 log.debug "Parent resource weren't ::_all - returning..."
             end
         end
-
        
         def _get_destination_path(resource)
             result = get_section_value(resource, "Properties.DestinationPath")
@@ -99,7 +144,6 @@ module Metabox
             log.debug "Executing pre-handlers on resources: #{file_resource_names}"
             _execute_handlers(name, file_resource_names, "Properties.Hooks.Pre.Inline")
         end
-
 
         def _execute_post_handlers(name, file_resource_names)
             log.debug "Executing post-handlers on resources: #{file_resource_names}"
@@ -146,12 +190,27 @@ module Metabox
             result
         end 
         
-        def _execute_resource(resource_name)
+        def _import_resource(resource_name, path, force = false)
+            log.info "Executing import resource: #{resource_name}"
+           
+            service = get_service_by_name("metabox::http::file")
+            service.import_resource(resource_name, path, force) 
+        end
+
+        def _execute_resource(resource_name, force = false)
             log.info "Executing download resource: #{resource_name}"
             resource_parts = resource_name.split('::')
         
             service = get_service_by_name("metabox::http::file")
-            service.execute_resource(resource_name) 
+            service.execute_resource(resource_name, force) 
+        end
+
+        def _pack_resource(resource_name, force)
+            log.info "Executing pack resource: #{resource_name}"
+            resource_parts = resource_name.split('::')
+        
+            service = get_service_by_name("metabox::http::file")
+            service.pack_resource(resource_name, force) 
         end
     end
 end

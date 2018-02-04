@@ -6,8 +6,6 @@ module Metabox
 
         class VagrantJoinDCConfig < VagrantConfigBase
 
-            @config
-
             def initialize
 
             end
@@ -50,7 +48,8 @@ module Metabox
 
                 execute_tests config: config, 
                               vm_config: vm_config, 
-                              paths: "#{get_handler_tests_scripts_path}/dc.join.dsc.*"
+                              paths: "#{get_handler_tests_scripts_path}/dc.join.dsc.*",
+                              env: env
           
             end
            

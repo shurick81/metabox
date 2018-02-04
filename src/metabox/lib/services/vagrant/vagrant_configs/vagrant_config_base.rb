@@ -4,8 +4,6 @@ module Metabox
 
         class VagrantConfigBase < ServiceBase
 
-            @config
-
             attr_accessor :environment_config
 
             def initialize()
@@ -120,19 +118,19 @@ module Metabox
 
                 # empty incoming tags were provided
                 if active_tags.empty?
-                    log.warn "[-] skipping [#{provision_name}], no tag match detected"
+                    log.warn "[-] skipping [#{provision_name}], no provision_tags were provided"
                     return false
                 end
 
                 # only if active tags include any of specified in handler
                 tags.each do | tag |
-                    if active_tags.any? { |s| s.casecmp(tag)==0 }  
-                        log.info "[+] running  [#{provision_name}], tag found: #{tags} among #{tags}"
+                    if active_tags.any? { |s| s.casecmp(tag) == 0 }  
+                        log.info "[+] running  [#{provision_name}], tag found: #{tag} among #{active_tags} within #{tags}"
                         return true
                     end
                 end
                 
-                log.warn "[-] skipping [#{provision_name}], no tag match detected"
+                log.warn "[-] skipping [#{provision_name}], no tag match detected - active_tags: #{active_tags} current tags: #{tags}"
                 return false
             end
 

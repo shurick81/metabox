@@ -6,8 +6,6 @@ module Metabox
 
         class VagrantVS13Config < VagrantConfigBase
 
-            @config
-
             def initialize()
 
             end
@@ -26,7 +24,7 @@ module Metabox
                 target_deployment_file = File.join "c:\\_metabox_config\\#{safe_name}", target_file_name
 
                 props = {
-                    'vs_executable_path' => "c:\\_metabox_resources\\vs2013.5_ent_enu\\vs_ultimate.exe",
+                    'vs_executable_path' => "c:\\_metabox_resources\\vs2013.5_ent_enu",
                     'vs_product_name' => "Microsoft Visual Studio Ultimate 2013 with Update 5",
                     'vs_admin_deployment_file_path' => target_deployment_file
                 }

@@ -157,8 +157,13 @@ module Metabox
             get_service(Metabox::DocumentService)
         end
 
-        def run_cmd(cmd:, silent: false, pwd: nil, valid_exit_codes:[0])
-            os_service.run_cmd(cmd:cmd, silent: silent, pwd: pwd, valid_exit_codes: valid_exit_codes)
+        def run_cmd(cmd:, silent: false, pwd: nil, valid_exit_codes:[0], exclude_variables: nil)
+            os_service.run_cmd(
+                cmd:cmd, 
+                silent: silent, 
+                pwd: pwd, 
+                valid_exit_codes: valid_exit_codes,
+                exclude_variables: exclude_variables)
         end
 
         def create_packer_vars_file(template_name:)

@@ -14,12 +14,25 @@ module Metabox
             "metabox::http::file"
         end
 
-        def execute_resource(resource_name)
+        def execute_resource(resource_name, force = false)
 
             resource = document_service.get_download_files_resource_by_name(resource_name)
 
             _execute_pre_handlers(resource_name, resource)
-            _execute_download(resource_name, resource)
+            _execute_download(resource_name, resource, force)
+            _execute_post_handlers(resource_name, resource)
+        end
+
+        def pack_resource(resource_name, force = false)
+            resource = document_service.get_download_files_resource_by_name(resource_name)
+            _process_resource_zip_folder_for_resource(resource_name, resource, force)
+        end
+
+        def import_resource(resource_name, path, force = false)
+            resource = document_service.get_download_files_resource_by_name(resource_name)
+
+            _execute_pre_handlers(resource_name, resource)
+            _execute_download(resource_name, resource, force, path)
             _execute_post_handlers(resource_name, resource)
         end
 
@@ -47,17 +60,35 @@ module Metabox
             execute_inline_scripts(home_folder, scripts)
         end
 
-        def _execute_download(resource_name, resource)
+        def _execute_download(resource_name, resource, force = false, custom_path = nil)
             log.debug "Executing download on resource: #{resource_name}"
 
             home_folder = _get_destination_folder_path(resource.values.first)
             
             src = get_section_value(resource.values.first, "Properties.SourceUrl")
+
+            if !custom_path.nil?
+                custom_path = File.expand_path custom_path
+                log.debug "Using custom_path to download file: #{custom_path}"
+
+                if !File.exists? custom_path
+                    raise "File does not exist: #{custom_path}"
+                end
+
+                src = custom_path
+            end
+
             dst = get_section_value(resource.values.first, "Properties.DestinationPath")
             options = get_section_value(resource.values.first, "Properties.Options", [])
 
             should_download = _process_checksum(resource_name, resource, dst)
-            should_pack     = get_section_value(resource.values.first, "Properties.IsFileResource", true)
+
+            if force 
+                log.debug "force: #{force}"
+                should_download = force
+            end
+
+            should_pack = get_section_value(resource.values.first, "Properties.IsFileResource", true)
 
             if should_download 
                 
@@ -76,8 +107,19 @@ module Metabox
             end
 
             if should_pack 
-                _process_resource_zip_folder(file_path: dst)
+                _process_resource_zip_folder_for_resource(resource_name, resource, force)
             end            
+        end
+
+        def _download_and_pack
+
+        end
+
+        def _process_resource_zip_folder_for_resource(resource_name, resource, force = false)
+            log.debug "Executing pack on resource: #{resource_name}"
+
+            dst = get_section_value(resource.values.first, "Properties.DestinationPath")
+            _process_resource_zip_folder(file_path: dst, force: force)
         end
 
         def _process_checksum(resource_name, resource, file_path)
@@ -197,15 +239,12 @@ module Metabox
         end
 
         def execute_inline_scripts(home_folder, scripts)
-
-        
-
             scripts.each do | script |
                 run_cmd(cmd: "cd #{home_folder} && #{script}")
             end
         end
 
-        def _process_resource_zip_folder(file_path:)
+        def _process_resource_zip_folder(file_path:, force: false)
 
             folder_path = File.dirname file_path
             file_name   = File.basename file_path
@@ -214,6 +253,10 @@ module Metabox
 
             log.info "Checking is file exists: #{http_test_file_path}"
             should_zip  = !File.exists?(http_test_file_path)
+
+            if force
+                should_zip = true
+            end
 
             if should_zip
                 log.info "  - creating ZIP folder for file: #{file_name}"    

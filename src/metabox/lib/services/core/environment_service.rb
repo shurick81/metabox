@@ -6,6 +6,8 @@ module Metabox
         @http_server_addr;
         @local_metabox_values;
 
+        @revisions_flag;
+
         def initialize
             @local_metabox_values = {}
         end
@@ -32,8 +34,12 @@ module Metabox
             }
         end
 
-        def get_metabox_variables(raise_on_missing_vars: true)
+        def get_metabox_variables(raise_on_missing_vars: true, exclude_variables: [])
             result = {}
+
+            if exclude_variables.nil?
+                exclude_variables = []
+            end
 
             __env.each { | name, value |
                 if name.upcase.include? "METABOX_"
@@ -48,6 +54,10 @@ module Metabox
             }
 
             _fill_system_vars result, raise_on_missing_vars
+
+            exclude_variables.each do | exclude_variable_name |
+                result.delete(exclude_variable_name)
+            end
 
             result
         end
@@ -228,8 +238,16 @@ module Metabox
             result
         end
 
+        def enable_revisions
+            @revisions_flag = "1"
+        end
+
+        def disable_revisions
+            @revisions_flag = nil
+        end
+
         def metabox_features_revisions?
-            result = __env.fetch('METABOX_FEATURES_REVISIONS', nil)
+            result = __env.fetch('METABOX_FEATURES_REVISIONS', @revisions_flag)
             
             result != nil
         end

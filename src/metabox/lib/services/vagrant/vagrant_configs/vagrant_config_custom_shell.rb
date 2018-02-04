@@ -62,10 +62,6 @@ module Metabox
                 end
 
                 raise "not implemented yet"
-
-                script_paths.each do | script_path |
-                    run_cmd(cmd: "sh #{script_path}")
-                end
             end
 
             def _execute_inline_scripts(scripts)
@@ -76,8 +72,15 @@ module Metabox
 
                 home_folder = env_service.get_metabox_vagrant_dir
 
+                # we need to exclude VAGRANT_PROVISION_TAGS variable from custom inline script
+                # custom hooks are used to setup/shutdown CI agents
+                # if this variable gets into CI agent, then Vagant will always be run in 'revision' mode
+                # hence, eliminatibg these vars from custom hooks
                 scripts.each do | script |
-                    run_cmd(cmd: "#{script}", pwd: home_folder)
+                    run_cmd(cmd: "#{script}", pwd: home_folder, exclude_variables: [
+                        "METABOX_VAGRANT_PROVISION_TAGS",
+                        "VAGRANT_PROVISION_TAGS"
+                    ])
                 end
             end
 

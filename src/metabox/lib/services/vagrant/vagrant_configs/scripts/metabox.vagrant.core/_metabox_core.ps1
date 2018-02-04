@@ -497,3 +497,67 @@ function Safe-MbIISPoolStart {
         Start-WebAppPool -Name $name
     }
 }
+
+function Find-MbFileInPath {
+    Param(
+        [Parameter(Mandatory=$True)]
+        $path,
+
+        [Parameter(Mandatory=$False)]
+        $ext = "exe"
+    )
+
+    $folder = $path
+
+    # file or folder?
+    if($path.ToUpper().EndsWith($ext.ToUpper()) -eq $true) {
+        $folder  = Split-Path $path
+    } else {
+        $folder = $path
+    }
+
+    Log-MbInfoMessage "Looking for '$ext' file in folder: $path" 
+    $exeFile = Get-ChildItem $folder -Filter "*.$ext"  | Select-Object -First 1 
+
+    Log-MbInfoMessage " - found: $($exeFile.FullName)" 
+
+    if($exeFile -eq $null -or $exeFile.Name -eq $null) {
+        throw "Cannot find any '$ext' files in folder: $path" 
+    }
+
+    return $exeFile.FullName
+}
+
+function Install-MbPSModules {
+
+    Param(
+        [Parameter(Mandatory=$True)]
+        $packages
+    )
+
+    foreach($package in $packages ) {
+
+        Log-MbInfoMessage "`tinstalling package: $($package.Id) $($package.Version)"
+        
+        if ([System.String]::IsNullOrEmpty($package["Version"]) -eq $true) {
+            Install-Module -Name $package["Id"] -Force;
+        } else {
+            Install-Module -Name $package["Id"] -RequiredVersion $package["Version"] -Force;
+        }
+    }
+} 
+
+function Fix-MbDCPromoSettings($domainAdminPass) {
+    # https://aryannava.com/2012/01/05/administrator-password-required-error-in-dcpromo-exe/
+
+    $message =  "Executing 'net user Administrator /passwordreq:yes' to bypass dcpromo errors"
+    Log-MbInfoMessage $message 
+    
+    net user Administrator $domainAdminPass /passwordreq:yes
+    Validate-MbExitCode $LASTEXITCODE "Failed to execute: $message"
+}
+
+function Disable-MbIP6Interface {
+    Disable-NetAdapterBinding -InterfaceAlias "Ethernet" -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue 
+    Disable-NetAdapterBinding -InterfaceAlias "Ethernet 2" -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue
+}

@@ -14,6 +14,14 @@ $deploymentFilePath = Get-MbEnvVariable "METABOX_VS_ADMIN_DEPLOYMENT_FILE_PATH"
 $domainUserName = Get-MbEnvVariable "METABOX_VS_DOMAIN_USER_NAME"
 $domainUserPassword = Get-MbEnvVariable "METABOX_VS_DOMAIN_USER_PASSWORD"
 
+# check if $execPath exists
+# the reason is that different VS editions have different EXE files:
+# - vs_ultimate.exe
+# - vs_enterprise.exe
+# if not, them look for .exe file at the top folder in $execPath
+$execPath = Find-MbFileInPath $execPath
+Log-MbInfoMessage "Using VS install file: $execPath"
+
 Configuration Install_VS2013 {
 
     Import-DSCResource -Name MS_xVisualStudio  

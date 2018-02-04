@@ -84,7 +84,8 @@ module Metabox
                 # tests
                 execute_tests config: config, 
                               vm_config: vm_config, 
-                              paths: "#{get_handler_tests_scripts_path}/#{sp_version}.dsc.wfe.*"
+                              paths: "#{get_handler_tests_scripts_path}/#{sp_version}.dsc.wfe.*",
+                              env: env
             end
     
         end

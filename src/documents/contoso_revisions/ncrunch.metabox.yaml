@@ -17,7 +17,7 @@ Metabox:
       VagrantTemplate:
         - Type: "metabox::vagrant::shell"
           Tags: [ "revision", "ncrunch-2013" ]
-          Name: "Revision ncrunch-2013"
+          Name: "ncrunch-2013"
           Properties:
             path: "./scripts/ncrunch/ncrunch_plugin.ps1"
             env: 
@@ -38,7 +38,7 @@ Metabox:
 
         VagrantTemplate:
           - Type: "metabox::vagrant::shell"
-            Name: "Revision ncrunch-gridnodeserver"
+            Name: "ncrunch-gridnodeserver"
             Tags: [ "revision", "ncrunch-gridnodeserver" ]
             Properties:
               path: "./scripts/ncrunch/ncrunch_gridnode_server.ps1"

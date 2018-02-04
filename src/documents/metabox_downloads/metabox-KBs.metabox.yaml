@@ -26,3 +26,15 @@ Metabox:
               Enabled: true
               Type: "sha1"
               Value: "f97d8290d9d75d96f163095c4cb05e1b9f6986e0" 
+
+        # .NET 4.6
+        # choco install dotnet4.6
+        KB3045557:
+          Type: "metabox::http::file"
+          Properties:
+            SourceUrl: "http://download.microsoft.com/download/C/3/A/C3A5200B-D33C-47E9-9D70-2F7C65DAAD94/NDP46-KB3045557-x86-x64-AllOS-ENU.exe"
+            DestinationPath: "${ENV:METABOX_DOWNLOADS_PATH}/KB3045557/NDP46-KB3045557-x86-x64-AllOS-ENU.exe"
+            Checksum:
+              Enabled: true
+              Type: "sha1"
+              Value: "3049a85843eaf65e89e2336d5fe6e85e416797be" 

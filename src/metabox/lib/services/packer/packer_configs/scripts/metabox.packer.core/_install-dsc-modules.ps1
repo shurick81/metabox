@@ -24,20 +24,12 @@ $packages = @(
     @{ Id = "xTimeZone"; Version = "" },
     @{ Id = "xWebAdministration"; Version = "" },
     @{ Id = "xPendingReboot"; Version = "" },
-    @{ Id = "xComputerManagement"; Version = "" }
+    @{ Id = "xComputerManagement"; Version = "" },
+
+    @{ Id = "DSCR_Shortcut"; Version = "" }
 )
 
 Log-MbInfoMessage "Installing DSC modules: $packages"
-
-foreach($package in $packages ) {
-
-    Log-MbInfoMessage "`tinstalling package: $($package.Id) $($package.Version)"
-    
-    if ([System.String]::IsNullOrEmpty($package["Version"]) -eq $true) {
-        Install-Module -Name $package["Id"] -Force;
-    } else {
-        Install-Module -Name $package["Id"] -RequiredVersion $package["Version"] -Force;
-    }
-}
+Install-MbPSModules $packages
 
 exit 0

@@ -49,11 +49,13 @@ module Metabox
                 when "sql12"
                     execute_tests config: config, 
                                 vm_config: vm_config, 
-                                paths: "#{get_handler_tests_scripts_path}/sql12.dsc.*"
+                                paths: "#{get_handler_tests_scripts_path}/sql12.dsc.*",
+                                env: env
                 when "sql16"
                     execute_tests config: config, 
                                 vm_config: vm_config, 
-                                paths: "#{get_handler_tests_scripts_path}/sql16.dsc.*"
+                                paths: "#{get_handler_tests_scripts_path}/sql16.dsc.*",
+                                env: env
                 end
 
                  

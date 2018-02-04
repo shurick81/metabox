@@ -338,7 +338,6 @@ function Mb-InitSlave {
         Init-SlaveMac     $portNumber $slaveName
     }
 }
-
 function Mb-RestartSlave {
     Param(
         [Parameter(Mandatory=$True)]

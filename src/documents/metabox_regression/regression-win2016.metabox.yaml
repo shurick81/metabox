@@ -209,7 +209,7 @@ Metabox:
               Properties:
                 vs_domain_user_name: "reg-win2016\\vagrant"
                 vs_domain_user_password: "vagrant"
-                vs_executable_path: "c:\\_metabox_resources\\vs2015.3_ent_enu\\vs_enterprise.exe"
+                vs_executable_path: "c:\\_metabox_resources\\vs2015.3_ent_enu"
                 vs_product_name: "Microsoft Visual Studio Enterprise 2015 with Update 3"
                 
                 # VS15 woudn't give desired state over DSC check

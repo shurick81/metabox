@@ -55,5 +55,9 @@ Describe 'PowerShell DCS' {
             Get-Module -Name Pester -ListAvailable | Should BeLike "Pester"
         }
 
+        # It 'DSCR_Shortcut' {
+        #     Get-Module -Name DSCR_Shortcut -ListAvailable | Should BeLike "DSCR_Shortcut"
+        # }
+
     }
 }

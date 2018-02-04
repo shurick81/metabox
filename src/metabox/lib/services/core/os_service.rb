@@ -23,7 +23,7 @@ module Metabox
             cmd
         end
 
-        def run_cmd(cmd:, is_dry_run: false, pwd: nil, silent: false, valid_exit_codes: [0])
+        def run_cmd(cmd:, is_dry_run: false, pwd: nil, silent: false, valid_exit_codes: [0], exclude_variables: nil)
             
             if is_windows?
                 cmd = process_windows_cmd(cmd: cmd)
@@ -33,7 +33,9 @@ module Metabox
                 pwd = env_service.get_metabox_working_dir
             end
 
-            env_vars = env_service.get_metabox_variables
+            env_vars = env_service.get_metabox_variables(
+                exclude_variables: exclude_variables
+            )
 
             metabox_cmds = []
             metabox_masked_cmds = []

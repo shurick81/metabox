@@ -6,8 +6,6 @@ module Metabox
 
         class VagrantWin12SOEConfig < VagrantConfigBase
 
-            @config
-
             def initialize
 
             end

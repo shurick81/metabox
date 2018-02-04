@@ -17,9 +17,23 @@ module Metabox
                 vm_name = _get_full_vm_name
                 host_name = get_host_name(environment_name: _get_environment_name, vm_name: _get_vm_name)
 
-                log.warn "Configuring host #{vm_name}"
-                
+                log.warn "Configuring host #{vm_name}"                
                 vm_config.vm.hostname = host_name
+               
+                vm_config.vm.provider "virtualbox" do |v|
+
+                    stack_name = _get_environment_name
+                    vm_subname = _get_vm_name
+
+                    # vm name in virtual box
+                    # https://github.com/SubPointSolutions/metabox/issues/45
+                    branch_name = current_metabox_branch
+                    virtualbox_vm_name = "metabox::#{branch_name}::#{stack_name}::#{vm_subname}"
+                    v.name = virtualbox_vm_name
+
+                    # https://github.com/SubPointSolutions/metabox/issues/46
+                    v.customize ['modifyvm', :id, '--clipboard', 'bidirectional'] 
+                end
 
                 host_ip = get_ip_address(environment_name: _get_environment_name, vm_name: _get_vm_name)
                 gateway_ip = get_environment_ip_range(name: _get_environment_name) + ".1"

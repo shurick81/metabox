@@ -23,11 +23,31 @@ module Metabox
                 provision_props = ObjectUtils.deep_clone(default_properties)
                 provision_props.delete('type')
 
-                guest_port = provision_props.fetch('guest')
-                host_port = provision_props.fetch('host')
+                log.debug "Configuring network: #{provision_type}"
 
-                log.debug "Configuring network: #{provision_type} guest: #{guest_port} -> host: #{host_port}"
-                vm_config.vm.network provision_type, guest: guest_port, host: host_port
+                case provision_type
+                when 'forwarded_port'
+                    guest_port = provision_props.fetch('guest')
+                    host_port = provision_props.fetch('host')
+
+                    log.debug " guest: #{guest_port} -> host: #{host_port}"
+                    vm_config.vm.network provision_type, guest: guest_port, host: host_port
+                when 'public_network'
+                    ip = provision_props.fetch('ip', nil)
+
+                    if ip.nil?
+                        log.debug " public_network, parametless"
+                        vm_config.vm.network "public_network"
+                    else
+                        log.debug " public_network, ip: #{ip}"
+                        vm_config.vm.network "public_network", ip: ip
+                    end
+                else
+                    error_message = "Unknown, unsupported network type: #{provision_type}"
+
+                    log.error error_message
+                    raise error_message
+                end
             end
 
         end

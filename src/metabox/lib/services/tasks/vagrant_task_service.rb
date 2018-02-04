@@ -164,7 +164,8 @@ module Metabox
                 "vagrant box list"
             ].join(' && ')
 
-            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+            #track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, is_dry_run: is_dry_run? ) }
         end 
 
         def box_remove(params)
@@ -187,7 +188,8 @@ module Metabox
                 "vagrant box remove #{first_argument} #{additional_params}"
             ].join(' && ')
 
-            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+            #track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir, is_dry_run: is_dry_run? ) }
+            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, is_dry_run: is_dry_run? ) }
         end 
 
         def list(params)
@@ -199,7 +201,8 @@ module Metabox
                 "vagrant list"
             ].join(' && ')
 
-            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir,  is_dry_run: is_dry_run? ) }
+            #track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd, pwd: working_dir,  is_dry_run: is_dry_run? ) }
+            track_execution("Executing cmd") { os_service.run_cmd(cmd: cmd,  is_dry_run: is_dry_run? ) }
         end 
 
         def status(params)

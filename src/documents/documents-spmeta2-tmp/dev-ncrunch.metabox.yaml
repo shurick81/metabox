@@ -1,0 +1,83 @@
+Metabox:
+  Description: "Revision for NCrunch installation for VS2013/2015 for SPMeta2 related development"
+  Resources:
+    
+    ncrunch-2013:
+      Type: "vagrant::revision"
+      Name: "ncrunch-2013"
+      Tags: [ 'revision' ]
+      
+      TargetResource:
+        - MatchType : "tag"
+          Values    : [ "vs13" ]
+
+      VagrantTemplate:
+        - Type: "metabox::vagrant::shell"
+          Tags: [ "revision", "ncrunch-2013" ]
+          Name: "ncrunch-2013"
+          Properties:
+            path: "./scripts/ncrunch/ncrunch_plugin.ps1"
+            env: 
+              - "NCRUNCH_PLUGIN_NAME=ncrunch-vs2013"
+              - "NCRUNCH_PLUGIN_VERSION=3.2.3"
+
+    ncrunch-2015:
+      Type: "vagrant::revision"
+      Name: "ncrunch-2015"
+      Tags: [ 'revision' ]
+      
+      TargetResource:
+        - MatchType : "tag"
+          Values    : [ "vs15" ]
+
+      VagrantTemplate:
+        - Type: "metabox::vagrant::shell"
+          Tags: [ "revision", "ncrunch-2015" ]
+          Name: "ncrunch-2015"
+          Properties:
+            path: "./scripts/ncrunch/ncrunch_plugin.ps1"
+            env: 
+              - "NCRUNCH_PLUGIN_NAME=ncrunch-vs2015"
+              - "NCRUNCH_PLUGIN_VERSION=3.2.3"
+
+    ncrunch-grid-server-12:
+        Type: "vagrant::revision"
+        Name: "ncrunch-gridnodeserver"
+        Tags: [ 'revision' ]
+        
+        TargetResource:
+          - MatchType : "tag"
+            Values    : [ "vs13", "vs15", "sp", "sp13", "sp16" ]
+
+        VagrantTemplate:
+          - Type: "metabox::vagrant::shell"
+            Name: "ncrunch-gridnodeserver"
+            Tags: [ "revision", "ncrunch-gridnodeserver" ]
+            Properties:
+              path: "./scripts/ncrunch/ncrunch_gridnode_server.ps1"
+              env: 
+                - "NCRUNCH_GRIDNODE_VERSION=3.2.3"
+                - "NCRUNCH_GRIDNODE_USER_NAME=meta12\\vagrant"
+                - "NCRUNCH_GRIDNODE_USER_PASSWORD=vagrant"
+    
+    ncrunch-grid-server-16:
+        Type: "vagrant::revision"
+        Name: "ncrunch-gridnodeserver"
+        Tags: [ 'revision' ]
+        
+        TargetResource:
+          - MatchType : "tag"
+            Values    : [ "vs13", "vs15", "sp", "sp13", "sp16" ]
+
+        VagrantTemplate:
+          - Type: "metabox::vagrant::shell"
+            Name: "ncrunch-gridnodeserver"
+            Tags: [ "revision", "ncrunch-gridnodeserver" ]
+            Properties:
+              path: "./scripts/ncrunch/ncrunch_gridnode_server.ps1"
+              env: 
+                - "NCRUNCH_GRIDNODE_VERSION=3.2.3"
+                - "NCRUNCH_GRIDNODE_USER_NAME=meta16\\vagrant"
+                - "NCRUNCH_GRIDNODE_USER_PASSWORD=vagrant"
+
+  

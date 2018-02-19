@@ -1,0 +1,259 @@
+Metabox:
+  Description: Complete development stack for SPMeta2 development on Windows 2016. Creates two VMs - (1) DC (2) SQL + SharePoint 2016 Feature Pack 2
+  Parameters:
+    box_app:     "win2016-mb-app-${ENV:METABOX_GIT_BRANCH}"
+    box_sp:      "win2016-mb-bin-sp16fp2-${ENV:METABOX_GIT_BRANCH}"
+    
+    machine_folder_dc : "${ENV:METABOX_SPMETA_MACHINE_FOLDER_DC}/${ENV:METABOX_GIT_BRANCH}"
+    machine_folder_sql: "${ENV:METABOX_SPMETA_MACHINE_FOLDER_SQL}/${ENV:METABOX_GIT_BRANCH}"
+    machine_folder_dev: "${ENV:METABOX_SPMETA_MACHINE_FOLDER_DEV}/${ENV:METABOX_GIT_BRANCH}"
+  Resources:
+    
+    spmeta2-2016:
+      Type: "vagrant::stack"
+      Parameters:
+        app_box_name:       "Fn::GetParameter box_app"
+        sp_box_name:        "Fn::GetParameter box_sp"
+        
+        dc_domain_name:           "meta16.local"
+        dc_domain_admin_name:     "admin"
+        dc_domain_admin_password: "u8wxvKQ2zn"
+
+        # SQL specific params
+        sql14_bin_path: "c:\\_metabox_resources\\sql2014sp1"
+        
+        sql_instance_name:        "MSSQLSERVER"
+        sql_instance_features:    "SQLENGINE,SSMS,ADV_SSMS"
+       
+        # SharePoint specific settings
+        sp_setup_user_name:     "meta16\\vagrant"
+        sp_setup_user_password: "vagrant"
+
+      Resources:
+        # deploys DC controller
+        dc:
+          Tags: [ "dc" ]
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter app_box_name"
+
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 2
+                memory: 1024
+                machinefolder: "Fn::GetParameter machine_folder_dc"
+
+            - Type: "metabox::vagrant::host"
+              Properties:
+                  hostname: "Fn::GetHostName"
+
+            - Type: "metabox::vagrant::win12soe"
+              Name: "SOE config"
+              Tags: [ "soe" ]
+              Properties:
+                execute_tests: true
+        
+            - Type: "metabox::vagrant::dc12"
+              Name: "DC configuration"
+              Tags: [ "dc" ]
+              Properties:
+                execute_tests: true
+              
+                dc_domain_name          : "Fn::GetParameter dc_domain_name"
+                dc_domain_admin_name    : "Fn::GetParameter dc_domain_admin_name"
+                dc_domain_admin_password: "Fn::GetParameter dc_domain_admin_password"
+   
+        # deploys SQL12 server
+        # this one is used only with dev VMs for regression testing scenario
+        # use dev-loval VMs for local development
+        sql14:
+          Tags: ["sql14"]
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter app_box_name"
+
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 4
+                memory: 6144
+                machinefolder: "Fn::GetParameter machine_folder_sql"
+
+            - Type: "metabox::vagrant::host"
+              Properties:
+                hostname: "Fn::GetHostName"
+            
+            - Type: "metabox::vagrant::win12soe"
+              Name: "SOE config"
+              Tags: [ "soe" ]
+              Properties:
+                execute_tests: true
+         
+            - Type: "metabox::vagrant::dcjoin"
+              Properties:
+                execute_tests: true
+
+                # dc specific parameters
+                dc_domain_name:         "Fn::GetParameter dc_domain_name"
+                dc_join_user_name:      "Fn::GetParameter dc_domain_admin_name"
+                dc_join_user_password:  "Fn::GetParameter dc_domain_admin_password"
+
+            # transfer files
+            - Type: "metabox::vagrant::shell"
+              Tags: [ "sql_bin" ]
+              Properties:
+                path: "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
+                env: 
+                  - "METABOX_RESOURCE_NAME=sql2014sp1"
+            
+            # provision SQL
+            - Type: "metabox::vagrant::sql12"
+              Tags: [ "sql_install" ]
+              Properties:
+                execute_tests: true
+
+                # SQL specific params
+                sql_bin_path:           "Fn::GetParameter sql14_bin_path"
+                sql_instance_name:      "Fn::GetParameter sql_instance_name"
+                sql_instance_features:  "Fn::GetParameter sql_instance_features"
+                sql_sys_admin_accounts:
+                  - "vagrant"
+                  - "meta16\\vagrant"
+                dsc_check: "1"
+
+        # deploys a developer machine with SQL Server, SharePoint 2013 SP1 and VS2013
+        # in that case, no shared SQL is used, all setup happens on the same VM
+        # we use this for a local development
+        "dev-local${ENV:METABOX_SPMETA_VM_NAME}":
+          Tags: ["dev", "vs13", "vs15"]
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter sp_box_name"
+
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 4
+                #memory: 8192
+                memory: 10240
+                #memory: 6000
+                machinefolder: "Fn::GetParameter machine_folder_dev"
+
+            - Type: "metabox::vagrant::host"
+              Properties:
+                hostname: "Fn::GetHostName"
+
+            - Type: "metabox::vagrant::win12soe"
+              Name: "SOE config"
+              Tags: [ "soe" ]
+              Properties:
+                execute_tests: true
+         
+            - Type: "metabox::vagrant::dcjoin"
+              Properties:
+                execute_tests: true
+
+                # dc specific parameters
+                dc_domain_name:         "Fn::GetParameter dc_domain_name"
+                dc_join_user_name:      "Fn::GetParameter dc_domain_admin_name"
+                dc_join_user_password:  "Fn::GetParameter dc_domain_admin_password"
+
+            # transfer files
+            - Type: "metabox::vagrant::shell"
+              Tags: [ "sql_bin" ]
+              Properties:
+                path: "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
+                env: 
+                  - "METABOX_RESOURCE_NAME=sql2014sp1"
+            
+            # provision SQL
+            - Type: "metabox::vagrant::sql12"
+              Tags: [ "sql_install" ]
+              Properties:
+                execute_tests: true
+
+                # SQL specific params
+                sql_bin_path:           "Fn::GetParameter sql14_bin_path"
+                sql_instance_name:      "Fn::GetParameter sql_instance_name"
+                sql_instance_features:  "Fn::GetParameter sql_instance_features"
+                sql_sys_admin_accounts:
+                  - "vagrant"
+                  - "meta16\\vagrant"
+                dsc_check: "1"
+
+            # installs SharePoint 2013
+            - Type: "metabox::vagrant::sharepoint"
+              Name: "sharepoint install"
+              Tags: [ "sp_install" ]
+              Properties:
+                execute_tests: true
+
+                # sharepoint specific settings
+                sp_version: "sp2016"
+                sp_role   : ["wfe"]
+
+                # SQL point to the local VM, use GetHostName here
+                sp_farm_sql_server_host_name: "Fn::GetResourceHostName dev-local${ENV:METABOX_SPMETA_VM_NAME}"
+                sp_farm_sql_db_prefix: "Fn::GetResourceName"
+                
+                sp_farm_passphrase: "Fn::GetParameter dc_domain_admin_password"
+
+                sp_setup_user_name: "Fn::GetParameter sp_setup_user_name"
+                sp_setup_user_password: "Fn::GetParameter sp_setup_user_password"
+
+        # deploys a developer machine with SharePoint 2013 SP1 and VS2013
+        # SQL server is meant to be shared, sql12
+        # this is a regression testing scenario for SPMeta2
+        # we use this to spin up a grid of dozen farm with NCrunch Grid Node
+        # SQL is shared, 6G is ok, and then every SP farm has 6G as well
+        "dev${ENV:METABOX_SPMETA_VM_NAME}":
+          Tags: ["dev", "vs13", "vs15"]
+          VagrantTemplate:
+            - Type: "vagrant::config::vm"
+              Properties:
+                box: "Fn::GetParameter sp_box_name"
+
+            - Type: "vagrant::config::vm::provider::virtualbox"
+              Properties:
+                cpus: 4
+                memory: 6144
+                machinefolder: "Fn::GetParameter machine_folder_dev"
+
+            - Type: "metabox::vagrant::host"
+              Properties:
+                hostname: "Fn::GetHostName"
+
+            - Type: "metabox::vagrant::win12soe"
+              Name: "SOE config"
+              Tags: [ "soe" ]
+              Properties:
+                execute_tests: true
+         
+            - Type: "metabox::vagrant::dcjoin"
+              Properties:
+                execute_tests: true
+
+                # dc specific parameters
+                dc_domain_name:         "Fn::GetParameter dc_domain_name"
+                dc_join_user_name:      "Fn::GetParameter dc_domain_admin_name"
+                dc_join_user_password:  "Fn::GetParameter dc_domain_admin_password"
+
+            # installs SharePoint 2013
+            - Type: "metabox::vagrant::sharepoint"
+              Name: "sharepoint install"
+              Tags: [ "sp_install" ]
+              Properties:
+                execute_tests: true
+
+                # sharepoint specific settings
+                sp_version: "sp2016"
+                sp_role   : ["wfe"]
+
+                sp_farm_sql_server_host_name: "Fn::GetResourceHostName sql14"
+                sp_farm_sql_db_prefix: "Fn::GetResourceName"
+                
+                sp_farm_passphrase: "Fn::GetParameter dc_domain_admin_password"
+
+                sp_setup_user_name: "Fn::GetParameter sp_setup_user_name"
+                sp_setup_user_password: "Fn::GetParameter sp_setup_user_password"

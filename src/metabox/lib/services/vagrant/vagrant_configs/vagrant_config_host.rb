@@ -28,7 +28,10 @@ module Metabox
                     # vm name in virtual box
                     # https://github.com/SubPointSolutions/metabox/issues/45
                     branch_name = current_metabox_branch
-                    virtualbox_vm_name = "metabox::#{branch_name}::#{stack_name}::#{vm_subname}"
+                    # '::' won't work on windows
+                    # virtualbox_vm_name = "metabox::#{branch_name}::#{stack_name}::#{vm_subname}"
+
+                    virtualbox_vm_name = "metabox-#{branch_name}.#{stack_name}-#{vm_subname}"
                     v.name = virtualbox_vm_name
 
                     # https://github.com/SubPointSolutions/metabox/issues/46

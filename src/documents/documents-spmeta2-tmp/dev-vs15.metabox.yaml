@@ -1,0 +1,50 @@
+Metabox:
+  Description: "Revisions for contoso stack, deploys VS2013 to SP-tagged VMs"
+  Resources:
+    
+    vs2015-bin:
+      Type: "vagrant::revision"
+      Name: "vs2015-bin"
+      Tags: [ 'revision', 'vs15_bin' ]
+      
+      TargetResource:
+        - MatchType : "tag"
+          Values    : [ "vs15" ]
+
+      VagrantTemplate:
+        # transfer VS binary files
+        - Type: "metabox::vagrant::shell"
+          Name: "vs15 install media"
+          Tags: [ "vs15_bin" ]
+          Properties:
+            path: "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
+            env: 
+              - "METABOX_RESOURCE_NAME=vs2015.3_ent_enu"
+
+    vs2015-install:
+      Type: "vagrant::revision"
+      Name: "vs2015-install"
+      Tags: [ 'revision', 'vs15_install' ]
+      
+      TargetResource:
+        - MatchType : "tag"
+          Values    : [ "vs15" ]
+
+      VagrantTemplate:
+        # deploy VS
+        - Type: "metabox::vagrant::visual_studio13"
+          Name: "vs15 install"
+          Tags: [ "vs15_install" ]
+          Properties:
+            vs_domain_user_name: "meta16\\vagrant"
+            vs_domain_user_password: "vagrant"
+            vs_executable_path: "c:\\_metabox_resources\\vs2015.3_ent_enu"
+            vs_product_name: "Microsoft Visual Studio Enterprise 2015 with Update 3"
+            
+            # VS15 woudn't give desired state over DSC check
+            # TODO to troubleshoot
+            #dsc_check: "1"
+
+            execute_tests: true
+            vs_test_product_name: "Microsoft Visual Studio Enterprise 2015 with Updates"
+            vs_test_officetools_package_name: "Microsoft Office Developer Tools for Visual Studio 2015"

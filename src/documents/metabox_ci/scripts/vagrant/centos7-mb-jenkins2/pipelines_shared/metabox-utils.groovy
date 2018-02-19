@@ -313,6 +313,38 @@ void runMetaboxVagrantStackVMUp(mbSrcPath, String resourceName = null) {
      }
 }
 
+void runMetaboxVagrantStackVMRevision(mbSrcPath, String resourceName = null, revisions = null) { 
+
+    if(revisions == null) {
+        throw "Revisions are empty!"
+    }
+
+    if(resourceName != null) {
+        stackName    = resourceName.split('::')[0]
+        resourceName = resourceName.split('::')[1]
+    } else {
+        // meaning, second from the 'last'
+        stackName    = env.JOB_NAME.split('/')[-2]
+        resourceName = env.JOB_NAME.split('/').last().split('revision-').last()
+    }
+    
+    try {
+
+        // runRakeTask(mbSrcPath, "resource:generate")
+        // runRakeTask(mbSrcPath, "resource:list")
+        
+        stage ("metabox:apply_revision[$stackName::$resourceName,$revisions]") {
+            runRakeTask(mbSrcPath, "metabox:apply_revision[$stackName::$resourceName,$revisions]")
+        }
+       
+    } catch(e) {
+        echo "Failed to run build: ERROR - $e"
+        throw e
+     } finally {
+     
+     }
+}
+
 void runMetaboxVagrantStackVMHalt(mbSrcPath, String resourceName = null) { 
 
     if(resourceName != null) {

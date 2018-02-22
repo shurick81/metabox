@@ -29,7 +29,7 @@ MetaboxResource.define_config("win2012-mb-app") do | metabox |
         }
       }
 
-     # vagrant_win12_sysprep support files
+      # vagrant_win12_sysprep support files
       packer_template.provisioners << { 
         "type" => "file",
         "source" => "./scripts/packer/metabox.packer.core/answer_files/2012/Autounattend_sysprep.xml",

@@ -6,7 +6,7 @@ MetaboxResource.define_config("win2016-mb-app") do | metabox |
 
   custom_machine_folder = "#{working_dir}/vagrant_vms/metabox_canary_win2016"
 
-  box_name             = "win2012-mb-soe-#{git_branch}"
+  box_name             = "win2016-mb-soe-#{git_branch}"
   skip_windows_updates = true
 
   metabox.description = "Builds Windows 2016 app image"

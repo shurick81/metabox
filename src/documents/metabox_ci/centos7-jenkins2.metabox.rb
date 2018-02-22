@@ -17,6 +17,7 @@ MetaboxResource.define_config("centos7-jenkins2") do | metabox |
   metabox_ci_box_name    = metabox.env.METABOX_CI_BOX_NAME 
 
   box_name               = "centos7-mb-java8-#{git_branch}"
+  soe_box_name           = metabox.env.METABOX_CI_BOX_NAME
 
   metabox.define_packer_build("centos7-mb-jenkins2") do | packer_build |
 
@@ -60,9 +61,163 @@ MetaboxResource.define_config("centos7-jenkins2") do | metabox |
           "output": "#{working_dir}/packer_boxes/centos7-mb-jenkins2-#{git_branch}-{{.Provider}}.box"
         }
       }
-      
     end
 
+  end
+
+  metabox.define_vagrant_stack("metabox-ci-vm") do | vagrant_stack |
+    vagrant_stack.define_vagrant_host("jenkins2-#{git_branch}") do | vagrant_host |
+
+      vagrant_host.os = "linux"
+
+      vagrant_host.require_tools = [
+        "java",
+        "pwsh"
+      ]
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::config::vm",
+        "Properties" => {
+          "box" => soe_box_name
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::config::vm::provider::virtualbox",
+        "Properties" => {
+          "cpus" => 2,
+          "memory" => 512,
+          "machinefolder" => custom_machine_folder
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::config::vm::network",
+        "Properties" => {
+          "type" => "forwarded_port",
+          "guest" => 8080,
+          "host"  => jenkins_ui_port
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::config::vm::network",
+        "Properties" => {
+          "type" => "forwarded_port",
+          "guest" => jenkins_web_agent_port,
+          "host"  => jenkins_web_agent_port
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::vm:provision",
+        "Tags" => [ "j2-plugins" ],
+        "Properties" => {
+          "type" => "shell",
+          "path" => "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_configure_plugins.sh",
+          "args"  => [
+            jenkins_plugins,
+            jenkins_web_agent_port,
+            jenkins_pipelines_path
+          ]
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::vm:provision",
+        "Tags" => [ "j2-settings" ],
+        "Properties" => {
+          "type" => "shell",
+          "path" => "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_configure_settings.sh",
+          "args"  => [
+            jenkins_plugins,
+            jenkins_web_agent_port,
+            jenkins_pipelines_path
+          ]
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::vm:provision",
+        "Tags" => [ "j2-restart" ],
+        "Properties" => {
+          "type" => "shell",
+          "path" => "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_safe_restart.sh",
+          "args"  => [
+            jenkins_plugins,
+            jenkins_web_agent_port,
+            jenkins_pipelines_path
+          ]
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::vm:provision",
+        "Tags" => [ "j2-users" ],
+        "Properties" => {
+          "type" => "shell",
+          "path" => "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_create_users.sh",
+          "args"  => [
+            jenkins_plugins,
+            jenkins_web_agent_port,
+            jenkins_pipelines_path
+          ]
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "vagrant::vm:provision",
+        "Tags" => [ "j2-pipelines" ],
+        "Properties" => {
+          "type" => "shell",
+          "path" => "./scripts/vagrant/centos7-mb-jenkins2/scripts/j2_import_pipelines.sh",
+          "args"  => [
+            jenkins_plugins,
+            jenkins_web_agent_port,
+            jenkins_pipelines_path
+          ]
+        }
+      }
+
+      vagrant_host.handlers << {
+        "Type" => "metabox::custom::shell",
+        "Name" => "Custom pre/post script handler",
+        "Tags" => [ "j2-custom" ],
+        "Properties" => {
+          "hooks" => {
+            "pre_vagrant" => {
+              "inline" => [
+                "echo 'METABOX-CI: shutting down swarm client'",
+                "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave #{jenkins_ui_port} metabox-slave-#{git_branch}\""
+              ]
+            },
+            "vagrant" => {
+              "inline" => [
+                "echo 'doing nothing'" 
+              ]
+            },
+            "post_vagrant" => {
+              "inline" => [
+                "echo 'METABOX-CI: running new Swarm client...'" ,
+                "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-InitSlave #{jenkins_ui_port} metabox-slave-#{git_branch}\""
+              ]
+            },
+            "post_vagrant_destroy" => {
+              "inline" => [
+                "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave #{jenkins_ui_port} metabox-slave-#{git_branch}\""
+              ]
+            },
+            "pre_vagrant_destroy" => {
+              "inline" => [
+                "pwsh -c \". ./scripts/jenkins2/metabox-ci.ps1; Mb-ShutdownSlave #{jenkins_ui_port} metabox-slave-#{git_branch}\""
+              ]
+            }
+          }
+        }
+      }
+
+
+    end
   end
 
 end

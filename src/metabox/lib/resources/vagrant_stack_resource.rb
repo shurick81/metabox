@@ -4,13 +4,23 @@ include Metabox::Resources
 module Metabox
     module Resources  
 
-        class VagrantTemplateResource < ResourceBase
-            
+        class VagrantHostResource < ResourceBase
+         
+            attr_accessor :os 
+
             attr_accessor :host_name
             attr_accessor :handlers
+            attr_accessor :require_tools
           
             def _init_dsl_properties
+               @os = "windows"
+
                @handlers = []
+               @require_tools = []
+            end
+
+            def configs 
+                @handlers
             end
 
             def add_config(config) 
@@ -20,15 +30,11 @@ module Metabox
 
         class VagrantStackResource < ResourceBase
         
-            def define_vagrant_template(host_name, &block)
+            def define_vagrant_host(host_name, &block)
 
-                vagrant_template = VagrantTemplateResource.new(&block)
+                vagrant_host = VagrantHostResource.new(host_name, &block)
 
-                if vagrant_template.nil? 
-                    vagrant_template.host_name = host_name
-                end
-
-                @resources << vagrant_template
+                @resources << vagrant_host
                 @resources.last
             end
     

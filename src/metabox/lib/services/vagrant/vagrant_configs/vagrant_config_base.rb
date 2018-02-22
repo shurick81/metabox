@@ -92,7 +92,13 @@ module Metabox
             end
 
             def get_tags(config:)
-                config.fetch('Tags', [])
+                result = config.fetch('Tags', [])
+
+                if result.is_a?(String)
+                    return [ result ]
+                end
+
+                result
             end
 
             def should_run?(config:, active_tags: nil) 
@@ -462,7 +468,7 @@ module Metabox
                     }
                     
                     target_vm = all_vms_aliases.fetch(vagrant_vm_name)
-                    target_vm_os = target_vm.fetch('OS', 'windows')
+                    target_vm_os = target_vm.os
 
                     case target_vm_os
                     when "windows"
@@ -489,7 +495,7 @@ module Metabox
             
             def _validate_required_tools(config:)
             
-                tools = config.fetch('RequireTools', [])
+                tools = config.require_tools
     
                 if tools.count > 0 
                     log.info "Validating required tools..."

@@ -105,14 +105,14 @@ module Metabox
         end
 
         def get_vagrant_vm_resources
-            result = {} 
-            docs = get_documents
 
-            docs.each do | doc |
-                resources = doc.vagrant_vm_resources
-                resources.each { | name, value | 
-                    result[name] = value
-                }
+            result = {}
+            resources = get_resources.select { | name, value | value.is_a?(VagrantStackResource) }
+
+            resources.each do | name, value |
+                value.resources.each do | res_value |
+                    result[name + "::" + res_value.name] = res_value
+                end
             end
 
             result
@@ -174,14 +174,11 @@ module Metabox
         end
 
         def get_vagrant_environment_resources
-            result = {} 
-            docs = get_documents
+            result = {}
+            resources = get_resources.select { | name, value | value.is_a?(VagrantStackResource) }
 
-            docs.each do | doc |
-                resources = doc.vagrant_environment_resources
-                resources.each { | name, value | 
-                    result[name] = value
-                }
+            resources.each do | name, value |
+                result[name] = value
             end
 
             result

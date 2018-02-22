@@ -14,8 +14,8 @@ module Metabox
            
             def _get_vagrant_template(resource_value) 
 
-                os = resource_value.fetch('OS', 'windows')
-                result = resource_value.fetch('VagrantTemplate')
+                os = resource_value.os
+                result = resource_value.configs
 
                 case os.downcase
                 when "windows"
@@ -222,10 +222,12 @@ module Metabox
                     log.info "  stack: #{environment_name}"
 
                     # vm name -> environment + resource
-                    resources = environment_value.fetch('Resources')
+                    resources = environment_value.resources
                     
                     # configuring stack resources
-                    resources.each { | resource_name, resource_value |
+                    resources.each { | resource_value |
+                        resource_name = resource_value.name
+
                         vm_name = (environment_name + "-" + resource_name).downcase
 
                         environment_config = {}

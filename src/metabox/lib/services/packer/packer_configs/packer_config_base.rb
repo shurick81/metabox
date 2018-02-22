@@ -58,7 +58,7 @@ module Metabox
 
             case os.downcase
             when "windows"
-                config['provisioners'].insert(0, {
+                config.provisioners.insert(0, {
                     "Type" => "metabox::packer::core"
                 })
             when "linux"

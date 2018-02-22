@@ -13,7 +13,7 @@ module Metabox
         end
 
         def name 
-            "metabpx::ccore::environment"
+            "metabpx::core::environment"
         end
 
         def __env 

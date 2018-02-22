@@ -16,7 +16,7 @@ module Metabox
 
             def _internal_process(resources)
 
-                packer_build_resources = _get_resources_by_type(resources, "metabox::packer::build")
+                packer_build_resources = _get_resources_by_type(resources, PackerBuildResource)
                 dir = env_service.get_metabox_packer_dir
                
                 packer_build_resources.each do | name, value |
@@ -31,10 +31,8 @@ module Metabox
                 log.debug "Creating Packer build file for resource"
                 log.verbose resource.to_yaml
 
-                props = resource.fetch('Properties')
-
-                file_name = props.fetch('PackerFileName')
-                template = props.fetch('PackerTemplate')
+                file_name = resource.packer_file_name
+                template  = resource.packer_template
 
                 packer_service = get_service_by_name("metabox::packer::config::base")
                 packer_config = {}

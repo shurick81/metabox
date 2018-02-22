@@ -10,8 +10,8 @@ module Metabox
 
             private 
 
-            def _get_resources_by_type(resources, type_name)
-                resources.select { |key, value| value.fetch('Type', nil) == type_name  }
+            def _get_resources_by_type(resources, type)
+                resources.select { |key, value| value.is_a?(type)  }
             end
 
         end

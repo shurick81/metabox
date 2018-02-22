@@ -34,7 +34,7 @@ module Metabox
 
         def _validate_required_tools(config:)
             
-            tools = @current_resource.fetch('RequireTools', [])
+            tools = @current_resource.require_tools
 
             if tools.count > 0 
                 log.info "Validating required tools..."
@@ -50,8 +50,12 @@ module Metabox
 
         def _inject_metabox_core_scripts(config:)
             log.debug "Injecting core metabox scripts..."
-            os = @current_resource.fetch('OS', 'windows')
+            os = @current_resource.os 
             
+            if os.nil? 
+                os = 'windows'
+            end
+
             case os.downcase
             when "windows"
                 config['provisioners'].insert(0, {
@@ -66,7 +70,13 @@ module Metabox
 
         def _internal_configure(services:, config:, packer_config:)
             
-            config.each { | section_name, value | 
+            packer_sections = {
+                "builders" => config.builders,
+                "provisioners" => config.provisioners,
+                "post-processors" => config.post_processors
+            }
+
+            packer_sections.each { | section_name, value | 
 
                 if value.is_a?(Array) && value.first.is_a?(Hash)
 

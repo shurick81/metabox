@@ -27,8 +27,8 @@ module Metabox
 
             packer_resource = document_service.get_packer_build_resource_by_name(first_param)
             
-            packer_resource_file = packer_resource.fetch('Properties').fetch('PackerFileName')
-            vagrant_box_name = packer_resource.fetch('Properties').fetch('VagrantBoxName')
+            packer_resource_file = packer_resource.packer_file_name
+            vagrant_box_name = packer_resource.vagrant_box_name
             
             log.info "  - file name: #{packer_resource_file}"
             log.info "  - box  name: #{vagrant_box_name}"

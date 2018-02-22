@@ -7,6 +7,8 @@ require_relative "service_container.rb"
 require_relative "core/log_service.rb"
 require_relative "core/log_service.rb"
 
+include Metabox::Utils
+
 module Metabox
     
     class ServiceBase

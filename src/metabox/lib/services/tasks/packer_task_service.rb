@@ -13,14 +13,7 @@ module Metabox
             "packer"
         end
 
-        def clean(params)
-            #log.info "Running task [#{__method__}] with arguments: #{params}"
-
-        end
-
         def build(params)
-            #log.info "Running task [#{__method__}] with arguments: #{params}"
-
             first_param =  params.first
 
             if first_param.nil?
@@ -28,7 +21,7 @@ module Metabox
             end
 
             packer_resource = document_service.get_packer_build_resource_by_name(first_param)
-            packer_resource_file = packer_resource.fetch('Properties').fetch('PackerFileName')
+            packer_resource_file = packer_resource.packer_file_name
             
             log.info "  - file name: #{packer_resource_file}"
             

@@ -30,6 +30,8 @@ rescue LoadError
   puts '-- SimpleCov gem not available. skipping coverage analysis'
 end                                                               
 
+ENV['METABOX_LOG_LEVEL'] = 'VERBOSE'
+
 SPEC_DIR = File.expand_path(File.dirname(__FILE__))
 SPEC_DATA_DIR = File.expand_path(File.dirname(__FILE__) + "/data")
 SPEC_DOCUMENTS_DATA_DIR = File.expand_path(File.dirname(__FILE__) + "/data/documents")

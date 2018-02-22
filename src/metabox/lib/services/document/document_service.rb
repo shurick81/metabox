@@ -3,13 +3,10 @@ module Metabox
     
     class DocumentService < ServiceBase
         
-        @cached_documents;
-        
         @document_dirs;
         @document_files;
         
         def initialize
-            @cached_documents = {}
             @document_dirs = {}
             @document_files = {}
         end
@@ -18,7 +15,7 @@ module Metabox
             "metabox::document"
         end
 
-        def generate(params)
+        def generate(params = nil)
 
             # don't clean up every time
             # all documents share the same scripts folder
@@ -32,7 +29,7 @@ module Metabox
             log.debug "Running generators..."
 
             generators = get_services(Metabox::Document::DocumentGeneratorBase)
-            resources = get_resources
+            resources  = get_resources
 
             context = {
                 :all_document_dirs => _get_all_document_dirs
@@ -48,7 +45,7 @@ module Metabox
             _process_vagrant_resources
         end
 
-        def list(params)
+        def list(params = nil)
             log_message = ["\n"]
 
             documents = get_documents
@@ -69,28 +66,19 @@ module Metabox
             paths = env_service.get_metabox_document_dirs
             
             paths.each do | path |
+                log.debug "Loading metabox documents from: #{path}"
+                files = _load_document_files(path: path, ext: get_document_extention)
 
-                if @cached_documents[path].nil?
-                    @cached_documents[path] = []
+                files.each do | file |
+                    
+                    config_path = File.absolute_path(file)
+                    log.info "including: #{config_path}"
 
-                    log.debug "Loading metabox documents from: #{path}"
-                    files = _load_document_files(path: path, ext: get_document_extention)
-
-                    files.each do | file |
-                        file_dir = File.dirname file
-
-                        @document_dirs[file_dir] = file_dir
-                        @document_files[file] = file
-
-                        @cached_documents[path] << MetaboxDocument.from_file(file)
-                    end
-                end
-
-                result = result + @cached_documents[path]
-
+                    require config_path
+                end              
             end
 
-            result
+            MetaboxResource.configs
         end
 
         def get_resources 
@@ -100,8 +88,8 @@ module Metabox
 
             docs.each do | doc |
                 resources = doc.resources
-                resources.each { | name, value | 
-                    result[name] = value
+                resources.each { | resource | 
+                    result[resource.name] = resource
                 }
             end
 
@@ -109,21 +97,11 @@ module Metabox
         end
 
         def get_document_extention 
-            "metabox.yaml"
+            "metabox.rb"
         end
 
         def get_packer_build_resources
-            result = {} 
-            docs = get_documents
-
-            docs.each do | doc |
-                resources = doc.packer_build_resources
-                resources.each { | name, value | 
-                    result[name] = value
-                }
-            end
-
-            result
+            get_resources.select { | name, value | value.is_a?(PackerBuildResource) }
         end
 
         def get_vagrant_vm_resources

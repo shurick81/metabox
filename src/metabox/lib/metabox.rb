@@ -34,14 +34,14 @@ def _include_folder_services(folders, is_debug = false)
   end
 end
 
-_include_folder_services [ "common" ]
+_include_folder_services [ "common", "utils" ]
 
 _include_files [ 
   "services/service_container.rb",
   "services/service_base.rb"
 ]
 
-_include_folder_services [ "documents", "services" ]
+_include_folder_services [  "documents", "services", "resources" ]
 
 module Metabox
   

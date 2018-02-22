@@ -7,7 +7,7 @@ module Metabox
         class FilesetSetResource < ResourceBase
 
             def define_file(name, &block)
-                @resources << FileResource.new(&block)
+                @resources << FileResource.new(name, &block)
                 @resources.last
             end
         end

@@ -5,6 +5,11 @@ module Metabox
     module Resources  
        
         class FileResourceChecksum < ResourceBase
+            def initialize(&block)
+                super("default", &block)
+            end
+
+
             attr_accessor :enabled
             attr_accessor :type
             attr_accessor :value
@@ -16,6 +21,8 @@ module Metabox
             attr_accessor :destination_path
             attr_accessor :hooks
             attr_accessor :checksum
+            attr_accessor :options
+            attr_accessor :is_file_resource
         
             def define_checksum(&block)
 
@@ -28,7 +35,9 @@ module Metabox
             end
 
             def _init_dsl_properties
-                @hooks = []
+                @hooks = {}
+                @options = []
+                @is_file_resource = true
             end
 
             def dsl_properties

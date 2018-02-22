@@ -21,7 +21,7 @@ module Metabox
             log.debug "batch_threads: #{batch_size}"
 
             name = params.first
-            force = params[1] == "--force"
+            force = params[1] == "--force" ||  params[1] == "-f"
 
             _validate_name_param(name)
 

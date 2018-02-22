@@ -147,14 +147,13 @@ module Metabox
         end
 
         def get_download_files_resources
-            result = {} 
-            docs = get_documents
+            result = {}
+            file_resources = get_resources.select { | name, value | value.is_a?(FilesetSetResource) }
 
-            docs.each do | doc |
-                resources = doc.download_files_resources
-                resources.each { | name, value | 
-                    result[name] = value
-                }
+            file_resources.each do | name, value |
+                value.resources.each do | res_value |
+                    result[name + "::" + res_value.name] = res_value
+                end
             end
 
             result
@@ -216,7 +215,7 @@ module Metabox
         def get_download_files_resource_by_name(name)
 
             resources = get_download_files_resources
-            
+
             resource = resources.fetch(name, nil)
             resource_names = "\n - " + resources.keys.sort.join("\n - ")
 

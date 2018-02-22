@@ -44,18 +44,34 @@ module Metabox
 
         def _execute_pre_handlers(resource_name, resource)
             log.debug "Executing pre-handlers on resource: #{resource_name}"
+            resource_value = resource.values.first
 
-            scripts = get_section_value(resource.values.first, "Properties.Hooks.Pre.Inline", [])
-            home_folder = _get_destination_folder_path(resource.values.first)
+            scripts = [] 
+            
+            if resource_value.hooks && 
+                resource_value.hooks["pre"] &&
+                resource_value.hooks["pre"]["inline"] 
+                scripts = resource_value.hooks["pre"]["inline"] 
+            end
+
+            home_folder = _get_destination_folder_path(resource_value)
 
             execute_inline_scripts(home_folder, scripts)
         end
 
         def _execute_post_handlers(resource_name, resource)
             log.debug "Executing post-handlers on resource: #{resource_name}"
+            resource_value = resource.values.first
 
-            scripts = get_section_value(resource.values.first, "Properties.Hooks.Post.Inline", [])
-            home_folder = _get_destination_folder_path(resource.values.first)
+            scripts = [] 
+            
+            if resource_value.hooks && 
+                resource_value.hooks["post"] &&
+                resource_value.hooks["post"]["inline"] 
+                scripts = resource_value.hooks["post"]["inline"] 
+            end
+
+            home_folder = _get_destination_folder_path(resource_value)
 
             execute_inline_scripts(home_folder, scripts)
         end
@@ -64,8 +80,9 @@ module Metabox
             log.debug "Executing download on resource: #{resource_name}"
 
             home_folder = _get_destination_folder_path(resource.values.first)
-            
-            src = get_section_value(resource.values.first, "Properties.SourceUrl")
+            resource_value = resource.values.first
+
+            src = resource_value.source_url
 
             if !custom_path.nil?
                 custom_path = File.expand_path custom_path
@@ -78,8 +95,8 @@ module Metabox
                 src = custom_path
             end
 
-            dst = get_section_value(resource.values.first, "Properties.DestinationPath")
-            options = get_section_value(resource.values.first, "Properties.Options", [])
+            dst = resource_value.destination_path
+            options =resource_value.options
 
             should_download = _process_checksum(resource_name, resource, dst)
 
@@ -88,7 +105,7 @@ module Metabox
                 should_download = force
             end
 
-            should_pack = get_section_value(resource.values.first, "Properties.IsFileResource", true)
+            should_pack = resource_value.is_file_resource
 
             if should_download 
                 
@@ -118,7 +135,9 @@ module Metabox
         def _process_resource_zip_folder_for_resource(resource_name, resource, force = false)
             log.debug "Executing pack on resource: #{resource_name}"
 
-            dst = get_section_value(resource.values.first, "Properties.DestinationPath")
+            resource_value = resource.values.first
+
+            dst = resource_value.destination_path
             _process_resource_zip_folder(file_path: dst, force: force)
         end
 
@@ -129,12 +148,20 @@ module Metabox
                 log.debug "File does not exist: #{file_path}"
                 return true
             end
-            
-            checksum_section = get_section_value(resource.values.first, "Properties.Checksum")
 
-            checksum_enabled = checksum_section.fetch('Enabled', true)
-            checksum_type = checksum_section.fetch('Type', "sha1")
-            checksum_value = checksum_section.fetch('Value')
+            resource_value =  resource.values.first           
+            
+            checksum_section = resource_value.checksum
+
+            checksum_enabled = false
+            checksum_type    = "sha1"
+            checksum_value   = nil
+
+            if !checksum_section.nil?
+                checksum_enabled = checksum_section.enabled
+                checksum_type = checksum_section.type
+                checksum_value = checksum_section.value
+            end
 
             if checksum_enabled.to_s.downcase != "true" 
                 return true
@@ -227,7 +254,7 @@ module Metabox
         end
 
         def _get_destination_path(resource)
-            result = get_section_value(resource, "Properties.DestinationPath")
+            result = resource.destination_path
             result
         end
 

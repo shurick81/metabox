@@ -26,7 +26,16 @@ module Metabox
               result = self.default(box_name, &block)
           
               result.cpus = 2
-              result.memory = 512
+              result.memory = 1024 * 0.5
+          
+              result
+            end
+
+            def self.one_g(box_name, &block)
+              result = self.default(box_name, &block)
+          
+              result.cpus = 2
+              result.memory = 1024 * 1
           
               result
             end

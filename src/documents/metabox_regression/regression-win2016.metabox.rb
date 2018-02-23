@@ -24,7 +24,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
 
     dc_host = vagrant_stack.define_host("dc") do | vagrant_host |
       vagrant_host.add_roles([
-        MinimalHostRole.half_g(box_app),
+        MinimalHostRole.one_g(box_app),
         Win12SOERole.default,
         WinDCRole.default
       ])
@@ -40,7 +40,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
 
     vagrant_stack.define_host("vs13") do | vagrant_host |
       vagrant_host.add_roles([
-        MinimalHostRole.half_g(box_app),
+        MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
         WinDCJoinRole.default,
 
@@ -53,7 +53,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
 
     vagrant_stack.define_host("vs15") do | vagrant_host |
       vagrant_host.add_roles([
-        MinimalHostRole.half_g(box_app),
+        MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
         WinDCJoinRole.default,
 

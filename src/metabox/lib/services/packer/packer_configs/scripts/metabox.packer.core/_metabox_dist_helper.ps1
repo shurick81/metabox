@@ -276,29 +276,40 @@ function Unpack-NonIsoResource($isoFolder, $targetFolder) {
 function Pull-Resource($http, $resourceName, $resourcesFolder) {
     
     $targetResourceFolder = [System.IO.Path]::Combine($resourcesFolder, $resourceName)
-    $zipFolder = [System.IO.Path]::Combine($targetResourceFolder, "__zip")
-    $unpackZipFolder = [System.IO.Path]::Combine($targetResourceFolder, "__zip_unpacked")
-    
-    Ensure-Folder $targetResourceFolder
-    Ensure-Folder $zipFolder
-    Ensure-Folder $unpackZipFolder
+    $targetResourceFileFlag = [System.IO.Path]::Combine($targetResourceFolder, "__metabox.present.flag")
 
-    Log-MbInfoMessage "Downloading metabox resource: $resourceName to dir: $zipFolder"
-    Pull-ZipResource $http $resourceName $zipFolder
+    if (!(Test-Path $targetResourceFileFlag)) {
+        $zipFolder = [System.IO.Path]::Combine($targetResourceFolder, "__zip")
+        $unpackZipFolder = [System.IO.Path]::Combine($targetResourceFolder, "__zip_unpacked")
+        
+        Ensure-Folder $targetResourceFolder
+        Ensure-Folder $zipFolder
+        Ensure-Folder $unpackZipFolder
 
-    Log-MbInfoMessage "Unpaking zip resource: $zipFolder"
-    Unpack-ZipResource $targetResourceFolder $zipFolder $unpackZipFolder
+        Log-MbInfoMessage "Downloading metabox resource: $resourceName to dir: $zipFolder"
+        Pull-ZipResource $http $resourceName $zipFolder
 
-    Log-MbInfoMessage "Unpacking ISO: $unpackZipFolder -> $targetResourceFolder"
-    Unpack-IsoResource $unpackZipFolder $targetResourceFolder 
+        Log-MbInfoMessage "Unpaking zip resource: $zipFolder"
+        Unpack-ZipResource $targetResourceFolder $zipFolder $unpackZipFolder
 
-    Log-MbInfoMessage "Unpacking non-ISO: $unpackZipFolder -> $targetResourceFolder"
-    Unpack-NonIsoResource $unpackZipFolder $targetResourceFolder 
+        Log-MbInfoMessage "Unpacking ISO: $unpackZipFolder -> $targetResourceFolder"
+        Unpack-IsoResource $unpackZipFolder $targetResourceFolder 
 
-    Log-MbInfoMessage "Cleaning up..."
-    
-    Delete-Folder $zipFolder
-    Delete-Folder $unpackZipFolder
+        Log-MbInfoMessage "Unpacking non-ISO: $unpackZipFolder -> $targetResourceFolder"
+        Unpack-NonIsoResource $unpackZipFolder $targetResourceFolder 
+
+        Log-MbInfoMessage "Cleaning up..."
+        
+        Delete-Folder $zipFolder
+        Delete-Folder $unpackZipFolder
+
+        Log-MbInfoMessage "Setting up unpacked flag: $targetResourceFileFlag "
+        New-Item $targetResourceFileFlag  -ItemType file
+
+        Log-MbInfoMessage "Transfer completed!"
+    } else {
+        Log-MbInfoMessage "Found flag file, metabox won't transfer any files: $targetResourceFileFlag"
+    }
 }
 
 Log-MbInfoMessage "Pulling random.txt file..."

@@ -29,9 +29,11 @@ module Metabox
           
             def _init_properties
               super
+
+              @sp_farm_passphrase = @default_dc_domain_admin_password
             end
           
-            def validate
+            def validate(vagrant_host:)
               raise "sp_version" if @sp_version.nil?
               raise "sp_role" if @sp_role.nil?
 
@@ -66,7 +68,7 @@ module Metabox
                     "sp_setup_user_password" => @sp_setup_user_password      
                   }
                 }
-                
+
               ])
             end
           

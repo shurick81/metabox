@@ -35,7 +35,7 @@ module Metabox
               result = self.default(box_name, &block)
           
               result.cpus = 4
-              result.memory = 102-4 * 4
+              result.memory = 1024 * 4
           
               result
             end
@@ -80,7 +80,7 @@ module Metabox
               @machinefolder = nil
             end
           
-            def validate
+            def validate(vagrant_host:)
               if box_name.nil? 
                 raise "box_name is nil"
               end

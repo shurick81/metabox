@@ -20,7 +20,7 @@ module Metabox
               super
             end
           
-            def validate
+            def validate(vagrant_host:)
               
             end
           

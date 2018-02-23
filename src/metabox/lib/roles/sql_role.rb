@@ -23,21 +23,19 @@ module Metabox
             end
           
             def _init_properties
-              log.error "111"
-
+              super 
+              
               @sql_resource_name = "sql2012sp2"
               
-              @sql_instance_name       = "MSSQLSERVER"
-              @sql_instance_features   = "SQLENGINE,SSMS,ADV_SSMS"
+              @sql_instance_name       = @default_sql_instance_name
+              @sql_instance_features   = @default_sql_instance_features
              
               @sql_sys_admin_accounts = [
                 "vagrant"
               ]
             end
           
-            def validate
-              log.error "222"
-
+            def validate(vagrant_host:)
               raise "sql_resource_name" if @sql_resource_name.nil?
 
               raise "sql_instance_name" if @sql_instance_name.nil?

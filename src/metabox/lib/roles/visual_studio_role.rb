@@ -30,7 +30,7 @@ module Metabox
               super
             end
           
-            def validate
+            def validate(vagrant_host:)
               raise "dc_short_name" if @dc_short_name.nil?
 
               rasie "vs_product_name" if @vs_product_name.nil?

@@ -12,6 +12,8 @@ module Metabox
             attr_accessor :handlers
             attr_accessor :require_tools
           
+            
+
             def stack 
                 @parent
             end
@@ -46,7 +48,7 @@ module Metabox
                 log.info "  - adding role: #{role.name}"
 
                 log.debug "     - validating role #{role.name}"
-                role.validate
+                role.validate(vagrant_host: self)
 
                 log.debug "     - configuring role: #{role.name}"
                 role.configure(vagrant_host: self)
@@ -71,6 +73,8 @@ module Metabox
 
         class VagrantStackResource < ResourceBase
         
+            attr_accessor :dc_domain_full_name
+
             def define_host(host_name, &block)
                 define_vagrant_host(host_name, &block)
             end

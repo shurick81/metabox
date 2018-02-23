@@ -5,11 +5,14 @@ module Metabox
 
             attr_accessor :name
             attr_accessor :description
+            attr_accessor :parent
 
             @resources;
 
-            def initialize(name, &block)
+            def initialize(name, parent = nil, &block)
         
+                @parent = parent
+
                 @name = name
                 @resources = []
 
@@ -23,6 +26,18 @@ module Metabox
                 end 
             end
         
+            def services 
+                Metabox::ServiceContainer.instance
+            end
+
+            def get_service_by_name(service_name)
+                services.get_service_by_name(service_name)
+            end
+
+            def log
+                services.get_service(Metabox::LogService) 
+            end
+
             def env 
                 result = Metabox::ServiceContainer.instance.get_service(Metabox::ResourceEnvironmentService)
                 

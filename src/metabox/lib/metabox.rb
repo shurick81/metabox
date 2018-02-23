@@ -41,7 +41,7 @@ _include_files [
   "services/service_base.rb"
 ]
 
-_include_folder_services [  "documents", "services", "resources" ]
+_include_folder_services [  "documents", "services", "resources", "roles" ]
 
 module Metabox
   

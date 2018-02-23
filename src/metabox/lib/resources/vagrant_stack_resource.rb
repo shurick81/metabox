@@ -12,28 +12,73 @@ module Metabox
             attr_accessor :handlers
             attr_accessor :require_tools
           
+            def stack 
+                @parent
+            end
+
+            def get_host_name
+
+                if stack.nil?
+                    error_message = "Cannot find parent stack for resource: #{self.inspect}"
+                    
+                    log.error error_message
+                    raise error_message
+                end
+
+                service = get_service_by_name("metabox::vagrant::config::base")
+                service.get_host_name(environment_name: stack.name, vm_name: name)
+            end
+
             def _init_dsl_properties
                @os = "windows"
 
                @handlers = []
                @require_tools = []
+
+               @stack = nil
             end
 
             def configs 
                 @handlers
             end
 
+            def add_role(role)
+                log.info "  - adding role: #{role.name}"
+
+                log.debug "     - validating role #{role.name}"
+                role.validate
+
+                log.debug "     - configuring role: #{role.name}"
+                role.configure(vagrant_host: self)
+            end
+
+            def add_roles(roles)
+                roles.each do | role |
+                    add_role(role)
+                end
+            end
+
             def add_config(config) 
                 @handlers << config
+            end
+
+            def add_configs(configs) 
+                configs.each do | config |
+                    add_config(config)
+                end
             end
         end
 
         class VagrantStackResource < ResourceBase
         
+            def define_host(host_name, &block)
+                define_vagrant_host(host_name, &block)
+            end
+
             def define_vagrant_host(host_name, &block)
 
-                vagrant_host = VagrantHostResource.new(host_name, &block)
-
+                vagrant_host = VagrantHostResource.new(host_name, self, &block)
+             
                 @resources << vagrant_host
                 @resources.last
             end

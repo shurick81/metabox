@@ -12,7 +12,7 @@ module Metabox
             attr_accessor :handlers
             attr_accessor :require_tools
           
-            
+            attr_accessor :depends_on  
 
             def stack 
                 @parent
@@ -38,6 +38,7 @@ module Metabox
                @require_tools = []
 
                @stack = nil
+               @depends_on = []
             end
 
             def configs 

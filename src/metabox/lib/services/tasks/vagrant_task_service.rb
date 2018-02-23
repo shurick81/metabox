@@ -107,8 +107,18 @@ module Metabox
             additional_params = cmd_params[:additional_params]
             all_additional_params = cmd_params[:all_additional_params]
 
-            vm_names = _get_environment_vm_names(env, vm)
+            vm_names        = _get_environment_vm_names(env, vm)
+            depends_on_vms  = _get_environment_vm_depends_on_resources(env, vm)
         
+            # getting depends_on vm names, adding to vm_names for vagrant-up calls 
+            depends_on_vms.reverse.each do | vm |
+                vm_names.insert(0, vm.name)
+            end
+
+            if vm_names.count > 1 
+                log.warn "Bringing VMs: #{vm_names}"
+            end
+
             begin 
                 _pre_vagrant_vm_provision
 
@@ -388,6 +398,22 @@ module Metabox
                     FileUtils.copy_file(vagrant_box_path, target_file_path)
                 end
             end
+        end
+
+        def _get_environment_vm_depends_on_resources(env, current_vm_name)
+            result = []
+
+            vagrant_resources = document_service.get_vagrant_vm_resources_for_environment(env)
+
+            vagrant_resources.each { | resource_name, resource_value | 
+                vm_name = resource_name.split('::')[1]
+
+                if vm_name == current_vm_name
+                    result = resource_value.depends_on
+                end
+            }
+
+            result
         end
 
         def _get_environment_vm_names(env, current_vm_name)

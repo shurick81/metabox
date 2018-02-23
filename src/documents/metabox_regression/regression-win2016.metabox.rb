@@ -26,6 +26,11 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
     end
 
     vagrant_stack.define_host("client") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.half_g(box_app),
         Win12SOERole.default,
@@ -34,6 +39,11 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
     end
 
     vagrant_stack.define_host("vs13") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
@@ -44,6 +54,11 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
     end
 
     vagrant_stack.define_host("vs15") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
@@ -54,6 +69,11 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
     end
 
     sql12 = vagrant_stack.define_host("sql12") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
@@ -62,7 +82,12 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
       ])
     end
 
-    sql14 = vagrant_stack.define_host("sql14") do | vagrant_host |
+    sql14_host = vagrant_stack.define_host("sql14") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
@@ -71,7 +96,12 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
       ])
     end
 
-    sql16 = vagrant_stack.define_host("sql16") do | vagrant_host |
+    sql16_host = vagrant_stack.define_host("sql16") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
@@ -81,25 +111,37 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
     end
 
     vagrant_stack.define_host("sp16_rtm") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host,
+        sql14_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.six_g(box_sp),
         Win12SOERole.default,
         WinDCJoinRole.default,
 
         SharePoint16_Standalone_Role.default do | role |
-          role.sp_farm_sql_server_host_name = sql14.get_host_name
+          role.sp_farm_sql_server_host_name = sql14_host.get_host_name
         end
       ])
     end
 
     vagrant_stack.define_host("sp16_fp2") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host,
+        sql14_host
+      ]
+
       vagrant_host.add_roles([
         MinimalHostRole.six_g(box_sp_fp2),
         Win12SOERole.default,
         WinDCJoinRole.default,
 
         SharePoint16_Standalone_Role.default do | role |
-          role.sp_farm_sql_server_host_name = sql14.get_host_name
+          role.sp_farm_sql_server_host_name = sql14_host.get_host_name
         end
 
       ])

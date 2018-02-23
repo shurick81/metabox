@@ -30,13 +30,18 @@ module Metabox
               
               @sql_instance_name       = @default_sql_instance_name
               @sql_instance_features   = @default_sql_instance_features
-             
-              @sql_sys_admin_accounts = [
-                "vagrant"
-              ]
+              
             end
           
             def validate(vagrant_host:)
+
+              if @sql_sys_admin_accounts.nil? || @sql_sys_admin_accounts.empty?
+                @sql_sys_admin_accounts = [
+                  "vagrant",
+                  "#{vagrant_host.stack.dc_short_name}\\vagrant"
+                ]
+              end
+
               raise "sql_resource_name" if @sql_resource_name.nil?
 
               raise "sql_instance_name" if @sql_instance_name.nil?

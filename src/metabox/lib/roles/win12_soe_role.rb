@@ -10,6 +10,7 @@ module Metabox
 
             def self.default(&block)
               result = Win12SOERole.new(&block)
+              result
             end
           
             def name 

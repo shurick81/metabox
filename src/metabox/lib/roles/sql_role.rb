@@ -16,6 +16,7 @@ module Metabox
           
             def self.default(&block)
               result = SqlRole.new(&block)
+              result
             end
           
             def name 

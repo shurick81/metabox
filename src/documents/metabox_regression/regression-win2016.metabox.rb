@@ -11,16 +11,11 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
   box_sp      =  "win2016-mb-bin-sp16rtm-#{git_branch}"
   box_sp_fp2  =  "win2016-mb-bin-sp16fp2-#{git_branch}"
 
-  dc_short_name = "reg-win2016"
-  dc_domain_name            = "#{dc_short_name}.local"
-
-  # SharePoint specific settings
-  sp_setup_user_name      = "#{dc_short_name}\\vagrant"
-  sp_setup_user_password  = "vagrant"
+  dc_domain_full_name  = "reg-win2016.local"
 
   metabox.define_vagrant_stack("regression-win2016") do | vagrant_stack |
   
-    vagrant_stack.dc_domain_full_name = dc_domain_name
+    vagrant_stack.dc_domain_full_name = dc_domain_full_name
 
     dc_host = vagrant_stack.define_host("dc") do | vagrant_host |
       vagrant_host.add_roles([
@@ -44,10 +39,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         Win12SOERole.default,
         WinDCJoinRole.default,
 
-        VisualStudio13_SP5_Enterprise_Role.default do | role |
-          role.dc_short_name = dc_short_name
-        end,
-
+        VisualStudio13_SP5_Enterprise_Role.default 
       ])
     end
 
@@ -57,10 +49,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         Win12SOERole.default,
         WinDCJoinRole.default,
 
-        VisualStudio15_SP3_Enterprise_Role.default do | role |
-          role.dc_short_name = dc_short_name
-        end,
-
+        VisualStudio15_SP3_Enterprise_Role.default
       ])
     end
 
@@ -69,14 +58,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
         WinDCJoinRole.default,
-
-        Sql12Role.default do | role |
-          role.sql_sys_admin_accounts = [
-            "vagrant",
-            "#{dc_short_name}\\vagrant"
-          ]
-        end,
-
+        Sql12Role.default 
       ])
     end
 
@@ -85,14 +67,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
         WinDCJoinRole.default,
-
-        Sql14Role.default do | role |
-          role.sql_sys_admin_accounts = [
-            "vagrant",
-            "#{dc_short_name}\\vagrant"
-          ]
-        end,
-
+        Sql14Role.default 
       ])
     end
 
@@ -101,14 +76,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         MinimalHostRole.four_g(box_app),
         Win12SOERole.default,
         WinDCJoinRole.default,
-
-        Sql16Role.default do | role |
-          role.sql_sys_admin_accounts = [
-            "vagrant",
-            "#{dc_short_name}\\vagrant"
-          ]
-        end,
-
+        Sql16Role.default 
       ])
     end
 
@@ -121,10 +89,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         SharePoint16_Standalone_Role.default do | role |
           role.sp_farm_sql_server_host_name = sql14.get_host_name
           role.sp_farm_sql_db_prefix        = vagrant_host.name
-
-          role.sp_setup_user_name     = sp_setup_user_name
-          role.sp_setup_user_password = sp_setup_user_password
-        end,
+        end
 
       ])
     end
@@ -138,10 +103,7 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
         SharePoint16_Standalone_Role.default do | role |
           role.sp_farm_sql_server_host_name = sql14.get_host_name
           role.sp_farm_sql_db_prefix        = vagrant_host.name
-
-          role.sp_setup_user_name     = sp_setup_user_name
-          role.sp_setup_user_password = sp_setup_user_password
-        end,
+        end
 
       ])
     end

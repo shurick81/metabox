@@ -10,6 +10,7 @@ module Metabox
 
             def self.default(&block)
               result = SharePoint16_Standalone_Role.new(&block)
+              result
             end
           
             def name 

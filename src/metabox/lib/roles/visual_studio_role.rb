@@ -20,6 +20,7 @@ module Metabox
 
             def self.default(&block)
               result = VisualStudioRole.new(&block)
+              result
             end
           
             def name 
@@ -31,6 +32,11 @@ module Metabox
             end
           
             def validate(vagrant_host:)
+
+              if @dc_short_name.nil?
+                @dc_short_name = vagrant_host.stack.dc_short_name
+              end
+
               raise "dc_short_name" if @dc_short_name.nil?
 
               rasie "vs_product_name" if @vs_product_name.nil?

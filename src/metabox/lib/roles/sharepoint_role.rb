@@ -21,6 +21,7 @@ module Metabox
           
             def self.default(&block)
               result = SharePointRole.new(&block)
+              result
             end
           
             def name 
@@ -34,6 +35,15 @@ module Metabox
             end
           
             def validate(vagrant_host:)
+
+              if @sp_setup_user_name.nil?
+                @sp_setup_user_name = "#{vagrant_host.stack.dc_short_name}\\vagrant"
+              end
+
+              if @sp_setup_user_password.nil?
+                @sp_setup_user_password = "vagrant"
+              end
+
               raise "sp_version" if @sp_version.nil?
               raise "sp_role" if @sp_role.nil?
 

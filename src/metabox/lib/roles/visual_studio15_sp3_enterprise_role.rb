@@ -10,6 +10,7 @@ module Metabox
 
         def self.default(&block)
           result = VisualStudio15_SP3_Enterprise_Role.new(&block)
+          result
         end
         
         def _init_properties

@@ -75,6 +75,10 @@ module Metabox
         
             attr_accessor :dc_domain_full_name
 
+            def dc_short_name
+                @dc_domain_full_name.split('.').first 
+            end
+
             def define_host(host_name, &block)
                 define_vagrant_host(host_name, &block)
             end

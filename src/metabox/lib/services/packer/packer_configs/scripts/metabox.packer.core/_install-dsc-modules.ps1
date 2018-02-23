@@ -8,25 +8,25 @@ Log-MbInfoMessage "Installing PowerShell Modules..."
 Trace-MbEnv
 
 $packages = @(
-    @{ Id = "PSWindowsUpdate"; Version = "" },
-    @{ Id = "Pester"; Version = "" },
+    @{ Id = "PSWindowsUpdate";      Version = "2.0.0.0" },
+    @{ Id = "Pester";               Version = "4.3.1" },
 
-    @{ Id = "cChoco"; Version = "" },
-    @{ Id = "cFirewall"; Version = "" },
+    @{ Id = "cChoco";               Version = "2.3.1.0" },
+    @{ Id = "cFirewall";            Version = "1.0.1" },
 
-    @{ Id = "SharePointDSC"; Version = "" },
-    @{ Id = "MS_xVisualStudio"; Version = "" },
+    @{ Id = "SharePointDSC";        Version = "1.9.0.0" },
+    @{ Id = "MS_xVisualStudio";     Version = "1.0.0.0" },
 
-    @{ Id = "xActiveDirectory"; Version = "" },
-    @{ Id = "xSQLServer"; Version = "" },
-    @{ Id = "xDSCFirewall"; Version = "" },
-    @{ Id = "xNetworking"; Version = "" },`
-    @{ Id = "xTimeZone"; Version = "" },
-    @{ Id = "xWebAdministration"; Version = "" },
-    @{ Id = "xPendingReboot"; Version = "" },
-    @{ Id = "xComputerManagement"; Version = "" },
+    @{ Id = "xActiveDirectory";     Version = "2.17.0.0" },
+    @{ Id = "xSQLServer";           Version = "9.1.0.0" },
+    @{ Id = "xDSCFirewall";         Version = "1.6.21" },
+    @{ Id = "xNetworking";          Version = "5.5.0.0" },`
+    @{ Id = "xTimeZone";            Version = "1.7.0.0" },
+    @{ Id = "xWebAdministration";   Version = "1.19.0.0" },
+    @{ Id = "xPendingReboot";       Version = "0.3.0.0" },
+    @{ Id = "xComputerManagement";  Version = "4.0.0.0" },
 
-    @{ Id = "DSCR_Shortcut"; Version = "" }
+    @{ Id = "DSCR_Shortcut";        Version = "1.3.1" }
 )
 
 Log-MbInfoMessage "Installing DSC modules: $packages"

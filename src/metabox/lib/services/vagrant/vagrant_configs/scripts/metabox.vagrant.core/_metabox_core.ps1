@@ -537,12 +537,51 @@ function Install-MbPSModules {
 
     foreach($package in $packages ) {
 
-        Log-MbInfoMessage "`tinstalling package: $($package.Id) $($package.Version)"
-        
-        if ([System.String]::IsNullOrEmpty($package["Version"]) -eq $true) {
-            Install-Module -Name $package["Id"] -Force;
-        } else {
-            Install-Module -Name $package["Id"] -RequiredVersion $package["Version"] -Force;
+        $maxAttempt = 5
+        $attempt = 0
+        $success = $false
+
+        $name = $package["Id"]
+        $version = $package["Version"]
+
+        while ( ($attempt -le $maxAttempt) -and (-not $success) ) {
+
+            try {
+                Log-MbInfoMessage "`t[$attempt/$maxAttempt] installing package: $name $version"
+
+                Log-MbInfoMessage "`tchecking is package exists: $name $version"
+                $existingModule = Get-Module -ListAvailable -Name $name
+
+                if($existingModule) {
+                    Log-MbInfoMessage "`t`tpackage exists, nothing to do: $name $version"
+                }
+                else {
+                    Log-MbInfoMessage "`t`tpackage does not exist, installing: $name $version"
+
+                    if ([System.String]::IsNullOrEmpty($version) -eq $true) {
+                        Install-Module -Name $name -Force;
+                    } else {
+                        Install-Module -Name $name -RequiredVersion $version -Force;
+                    }
+                }
+
+                Log-MbInfoMessage "`t[$attempt/$maxAttempt] finished installing package: $name $version"
+                $success = $true
+            } catch {
+                $exception = $_.Exception
+
+                Log-MbInfoMessage "`t[$attempt/$maxAttempt] coudn't install package: $name $version"
+                Log-MbInfoMessage "`t[$attempt/$maxAttempt] error was: $exception"
+
+                $attempt = $attempt + 1
+            }
+        }
+
+        if($success -eq $false) {
+            $errorMessage = "`t[$attempt/$maxAttempt] coudn't install package: $name $version"
+            
+            Log-MbInfoMessage $errorMessage
+            throw $errorMessage
         }
     }
 } 

@@ -46,7 +46,7 @@ module Metabox
             end
 
             def add_role(role)
-                log.info "  - adding role: #{role.name}"
+                log.debug "  - adding role: #{role.name}"
 
                 log.debug "     - validating role #{role.name}"
                 role.validate(vagrant_host: self)

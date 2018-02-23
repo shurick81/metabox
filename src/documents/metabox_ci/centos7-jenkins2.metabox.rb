@@ -81,6 +81,13 @@ MetaboxResource.define_config("centos7-jenkins2") do | metabox |
           "box" => soe_box_name
         }
       }
+      
+      vagrant_host.handlers << {
+        "Type" => "metabox::vagrant::host",
+        "Properties" => {
+          "hostname" => vagrant_host.get_host_name
+        }
+      }
 
       vagrant_host.handlers << {
         "Type" => "vagrant::config::vm::provider::virtualbox",

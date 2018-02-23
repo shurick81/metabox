@@ -5,7 +5,7 @@ MetaboxResource.define_config("win2016-mb-soe") do | metabox |
   working_dir = metabox.env.get_metabox_working_dir
   custom_machine_folder = "#{working_dir}/vagrant_vms/metabox_canary_win2016"
 
-  skip_windows_updates = true
+  skip_windows_updates = !metabox.env.SOE_SKIP_WIN_UPDATE.nil?
 
   metabox.description = "Builds Windows 2016 SOE image"
 

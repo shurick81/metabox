@@ -88,13 +88,11 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
 
         SharePoint16_Standalone_Role.default do | role |
           role.sp_farm_sql_server_host_name = sql14.get_host_name
-          role.sp_farm_sql_db_prefix        = vagrant_host.name
         end
-
       ])
     end
 
-    vagrant_stack.define_host("sp16_rtm") do | vagrant_host |
+    vagrant_stack.define_host("sp16_fp2") do | vagrant_host |
       vagrant_host.add_roles([
         MinimalHostRole.six_g(box_sp_fp2),
         Win12SOERole.default,
@@ -102,7 +100,6 @@ MetaboxResource.define_config("regression-win2016") do | metabox |
 
         SharePoint16_Standalone_Role.default do | role |
           role.sp_farm_sql_server_host_name = sql14.get_host_name
-          role.sp_farm_sql_db_prefix        = vagrant_host.name
         end
 
       ])

@@ -13,6 +13,11 @@ Trace-MbEnv
 Log-MbInfoMessage "Running: Install-WindowsFeature Web-Server -IncludeAllSubFeature"
 Install-WindowsFeature Web-Server -IncludeAllSubFeature
 
+# Missed NET-WCF-HTTP-Activation45 in SharePoint 2016 images #55
+# https://github.com/SubPointSolutions/metabox/issues/55
+Log-MbInfoMessage "Running: Install-WindowsFeature NET-WCF-HTTP-Activation45"
+Install-WindowsFeature NET-WCF-HTTP-Activation45
+
 Configuration Install_SharePointFarmPreSetupTuning
 {
     Import-DscResource -ModuleName PSDesiredStateConfiguration
@@ -42,6 +47,12 @@ Configuration Install_SharePointFarmPreSetupTuning
             StartupType     = "Automatic"
             State           = "Running"
         }  
+
+        WindowsFeature NETWCFHTTPActivation45
+        {
+            Ensure = "Present"
+            Name   = "NET-WCF-HTTP-Activation45"
+        }
      }
 }
 

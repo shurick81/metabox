@@ -44,6 +44,10 @@ module Metabox
                 @sp_setup_user_password = "vagrant"
               end
 
+              if @sp_farm_sql_db_prefix.nil?
+                @sp_farm_sql_db_prefix = vagrant_host.name 
+              end
+
               raise "sp_version" if @sp_version.nil?
               raise "sp_role" if @sp_role.nil?
 

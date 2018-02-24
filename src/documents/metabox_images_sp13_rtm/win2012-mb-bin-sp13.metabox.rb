@@ -7,7 +7,7 @@ MetaboxResource.define_config("win2012-mb-bin-sp13") do | metabox |
   custom_machine_folder = "#{working_dir}/vagrant_vms/metabox_canary_win2016"
 
   box_name             = "win2012-mb-app-#{git_branch}"
-  skip_windows_updates = true
+  skip_windows_updates = !metabox.env.SOE_SKIP_WIN_UPDATE.nil?
   
   sp_install_dir       = "C:\\_metabox_resources\\sp2013server_rtm"
   sp_prereq_dir        = "C:\\_metabox_resources\\sp2013_prerequisites"

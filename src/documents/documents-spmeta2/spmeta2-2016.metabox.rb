@@ -18,6 +18,9 @@ MetaboxResource.define_config("spmeta2-2016") do | metabox |
   machine_folder_sql   = metabox.env.METABOX_SPMETA_MACHINE_FOLDER_SQL(custom_machine_folder) + "/#{git_branch}"
   machine_folder_dev   = metabox.env.METABOX_SPMETA_MACHINE_FOLDER_DEV(custom_machine_folder) + "/#{git_branch}"
 
+  machine_ram          = metabox.env.METABOX_SPMETA_MACHINE_RAM(1024 * 6)
+  machine_cpus         = metabox.env.METABOX_SPMETA_MACHINE_CPUS(4)
+
   # name of a standalone or sharedvm name
   # standalone: (sql + sp + vs) per VM
   # shared    : shared sql + (sp/vs per dev VM)
@@ -63,7 +66,10 @@ MetaboxResource.define_config("spmeta2-2016") do | metabox |
       ]
 
       vagrant_host.add_roles([
-        MinimalHostRole.twelve_g(box_sp) do | role | 
+        MinimalHostRole.default(box_sp) do | role | 
+          role.memory  = machine_ram
+          role.cpus    = machine_cpus
+
           role.machinefolder = machine_folder_dev
         end,
         Win12SOERole.default,
@@ -91,7 +97,10 @@ MetaboxResource.define_config("spmeta2-2016") do | metabox |
       ]
 
       vagrant_host.add_roles([
-        MinimalHostRole.six_g(box_sp) do | role | 
+        MinimalHostRole.default(box_sp) do | role | 
+          role.memory  = machine_ram
+          role.cpus    = machine_cpus
+
           role.machinefolder = machine_folder_dev
         end,
         Win12SOERole.default,

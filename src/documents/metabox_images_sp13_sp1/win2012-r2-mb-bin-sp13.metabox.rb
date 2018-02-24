@@ -7,14 +7,14 @@ MetaboxResource.define_config("win2012-r2-mb-bin-sp13") do | metabox |
   custom_machine_folder = "#{working_dir}/vagrant_vms/metabox_canary_win2016"
 
   box_name             = "win2012-r2-mb-app-#{git_branch}"
-  skip_windows_updates = true
+  skip_windows_updates = !metabox.env.SOE_SKIP_WIN_UPDATE.nil?
   
   sp_install_dir       = "C:\\_metabox_resources\\sp2013sp1"
   
   # SP2013 product key
   sp_product_key       = metabox.env.METABOX_SP13_SP1_PRODUCT_KEY
 
-  metabox.description = "Builds Windows 2012 + SharePoint 2013 RTM binary image"
+  metabox.description = "Builds Windows 2012 R2 + SharePoint 2013 SP1 binary image"
 
   metabox.define_packer_build("win2012-r2-mb-bin-sp13") do | packer_build |
 
@@ -42,7 +42,7 @@ MetaboxResource.define_config("win2012-r2-mb-bin-sp13") do | metabox |
       }
 
       # transfer binaries
-      # - sp2013server_rtm
+      # - sp2013sp1
       # - sp2013_prerequisites
       packer_template.provisioners << { 
         "type" => "powershell",
@@ -50,7 +50,7 @@ MetaboxResource.define_config("win2012-r2-mb-bin-sp13") do | metabox |
           "./scripts/packer/metabox.packer.core/_metabox_dist_helper.ps1"
         ],
         "environment_vars" => [
-          "METABOX_RESOURCE_NAME=sp2013server_rtm"
+          "METABOX_RESOURCE_NAME=sp2013sp1"
         ]
       }
 
@@ -70,7 +70,7 @@ MetaboxResource.define_config("win2012-r2-mb-bin-sp13") do | metabox |
         packer_template.provisioners << { 
           "type" => "powershell",
           "scripts" => [
-            "./scripts/packer/metabox.packer.core/_sp2013_pre_rtm.ps1"
+            "./scripts/packer/metabox.packer.core/_sp2013_pre.ps1"
           ],
           "environment_vars" => env_vars
         }

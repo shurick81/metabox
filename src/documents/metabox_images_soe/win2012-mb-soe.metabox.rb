@@ -6,7 +6,7 @@ MetaboxResource.define_config("win2012-mb-soe") do | metabox |
   custom_machine_folder = "#{working_dir}/vagrant_vms/metabox_canary_win2012"
 
   box_name             = "opentable/win-2012-standard-amd64-nocm"
-  skip_windows_updates = true
+  skip_windows_updates = !metabox.env.SOE_SKIP_WIN_UPDATE.nil?
 
   metabox.description = "Builds Windows 2012 SOE image"
 

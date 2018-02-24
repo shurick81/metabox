@@ -7,6 +7,8 @@ MetaboxResource.define_config("win2016-mb-bin-sp16rtm") do | metabox |
   custom_machine_folder = "#{working_dir}/vagrant_vms/metabox_canary_win2016"
 
   box_name             = "win2016-mb-app-#{git_branch}"
+  sp16rtm_box_name     = "win2016-mb-bin-sp16rtm-#{git_branch}"
+
   skip_windows_updates = true
   
   sp_install_dir       = "C:\\_metabox_resources\\sp2016_rtm"
@@ -23,7 +25,7 @@ MetaboxResource.define_config("win2016-mb-bin-sp16rtm") do | metabox |
   metabox.define_packer_build("win2016-mb-bin-sp16rtm") do | packer_build |
 
     packer_build.packer_file_name = "win2016-mb-bin-sp16rtm.json"
-    packer_build.vagrant_box_name = "win2016-mb-bin-sp16rtm-#{git_branch}"
+    packer_build.vagrant_box_name = sp16rtm_box_name
 
     packer_build.define_packer_template do | packer_template |
      
@@ -165,7 +167,7 @@ MetaboxResource.define_config("win2016-mb-bin-sp16rtm") do | metabox |
       packer_template.builders << {
         "Type" => "packer::builders::vagrant_win16_sysprep",
         "Properties" => {
-          "box_name" => box_name,
+          "box_name" => sp16rtm_box_name,
           "builder" => {
             "guest_additions_mode" => "attach",
             "communicator" => "winrm",
@@ -196,8 +198,7 @@ MetaboxResource.define_config("win2016-mb-bin-sp16rtm") do | metabox |
       }
 
       # transfer binaries
-      # - sp2013server_rtm
-      # - sp2013_prerequisites
+      # - sp2016_fp2
       packer_template.provisioners << { 
         "type" => "powershell",
         "scripts" => [

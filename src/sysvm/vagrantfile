@@ -1,0 +1,32 @@
+Vagrant.configure(2) do |config|
+    config.vm.box = "win2016-sys"
+    config.vm.network :private_network, ip: "192.168.52.252", gateway: "192.168.52.1"
+    config.vm.network "forwarded_port", guest: 3389, host: 13390, auto_correct: true
+    config.vm.provider "virtualbox" do |vb|
+        vb.gui = true
+        vb.memory = "1536"
+        vb.cpus = 2
+        vdrivepath = 'd:/mbfileresources.vdi'
+        if !File.exist?(vdrivepath)
+            vb.customize [
+                'createhd',
+                '--filename', vdrivepath,
+                '--size', 200 * 1024
+            ]
+        end
+        vb.customize [
+            'storageattach', :id,
+            '--storagectl', 'IDE Controller',
+            '--port', 0,
+            '--device', 1,
+            '--type', 'hdd',
+            '--medium', vdrivepath
+        ]
+        end
+    config.vm.communicator = "winrm"
+    config.winrm.username = "vagrant"
+    config.winrm.password = "vagrant"
+    config.vm.provision :shell, path: "./initializedisks.ps1"
+    config.vm.provision :shell, path: "./fileshare.ps1"
+    config.vm.provision :shell, path: "./vsmedia.ps1"
+end

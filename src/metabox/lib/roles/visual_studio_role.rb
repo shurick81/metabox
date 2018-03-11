@@ -39,7 +39,7 @@ module Metabox
 
               raise "dc_short_name" if @dc_short_name.nil?
 
-              rasie "vs_product_name" if @vs_product_name.nil?
+              raise "vs_product_name" if @vs_product_name.nil?
               raise "vs_resource_name" if @vs_resource_name.nil?
 
               raise "vs_test_product_name" if @vs_test_product_name.nil?

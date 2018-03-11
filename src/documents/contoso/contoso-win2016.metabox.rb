@@ -68,6 +68,21 @@ MetaboxResource.define_config("contoso-win2016") do | metabox |
       ])
     end
 
+    vagrant_stack.define_host("vs17") do | vagrant_host |
+
+      vagrant_host.depends_on = [
+        dc_host
+      ]
+
+      vagrant_host.add_roles([
+        MinimalHostRole.four_g(box_app),
+        Win12SOERole.default,
+        WinDCJoinRole.default,
+
+        VisualStudio17_Role.default
+      ])
+    end
+
     sql12 = vagrant_stack.define_host("sql12") do | vagrant_host |
 
       vagrant_host.depends_on = [

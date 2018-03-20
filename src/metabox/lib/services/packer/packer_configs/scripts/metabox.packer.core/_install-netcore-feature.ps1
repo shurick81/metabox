@@ -16,30 +16,12 @@ Configuration NETFrameworkCore
             RebootNodeIfNeeded = $false
         }
 
-        Registry UpdateFromWindowsUpdateCenterEnable
-        {
-            Ensure      = "Present"
-            Key         = "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Servicing"
-            ValueName   = "LocalSourcePath"
-            ValueType   = "ExpandString"
-        }
-
-        Registry UpdateFromWindowsUpdateCenter
-        {
-            Ensure      = "Present"
-            Key         = "HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\Servicing"
-            ValueName   = "RepairContentServerSource"
-            ValueType   = "DWORD"
-            ValueData   = "2"
-            DependsOn   = "[Registry]UpdateFromWindowsUpdateCenterEnable"
-        }
-
         WindowsFeature "NET-Framework-Core" 
         {
             Ensure  = "Present"
             Name    = "NET-Framework-Core"
-            Source  = "Windows Update"
         }
+
     }
 }
 

@@ -99,7 +99,7 @@ module Metabox
               
               virtualbox_props = {
                 "cpus"   => @cpus,
-                "memory" => @memory.round
+                "memory" => @memory.to_i
               }
           
               if !@machinefolder.nil?

@@ -42,11 +42,11 @@ MetaboxResource.define_config("centos7-jenkins2") do | metabox |
         "Type" => "packer::provisioners::shell_centos7",
         "Properties" => {
           "scripts" => [
-            "./scripts/packer/shared/mb_printenv.sh",
-            "./scripts/packer/centos7-jenkins2/j2_install.sh",
-            "./scripts/packer/centos7-jenkins2/j2_configure_cli.sh",
-            "./scripts/packer/centos7-jenkins2/j2_configure_plugins.sh",
-            "./scripts/packer/centos7-jenkins2/j2_safe_restart.sh"
+            "./scripts/packer/packer.provisioners.shell_centos7/mb_printenv.sh",
+            "./scripts/packer/packer.provisioners.shell_centos7/j2_install.sh",
+            "./scripts/packer/packer.provisioners.shell_centos7/j2_configure_cli.sh",
+            "./scripts/packer/packer.provisioners.shell_centos7/j2_configure_plugins.sh",
+            "./scripts/packer/packer.provisioners.shell_centos7/j2_safe_restart.sh"
           ],
           "environment_vars" => [
             "METABOX_JENKINS2_PACKAGE=#{jenkins_package_name}",

@@ -31,9 +31,9 @@ MetaboxResource.define_config("centos7-java8") do | metabox |
         "Type" => "packer::provisioners::shell_centos7",
         "Properties" => {
           "scripts" => [
-            "./scripts/packer/shared/mb_printenv.sh",
-            "./scripts/packer/shared/mb_yum_install.sh",
-            "./scripts/packer/shared/mb_java8_install.sh"
+            "./scripts/packer/packer.provisioners.shell_centos7/mb_printenv.sh",
+            "./scripts/packer/packer.provisioners.shell_centos7/mb_yum_install.sh",
+            "./scripts/packer/packer.provisioners.shell_centos7/mb_java8_install.sh"
           ]
         }
       }
